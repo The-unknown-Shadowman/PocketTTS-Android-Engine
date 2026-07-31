@@ -1,0 +1,46 @@
+<resources>
+    <string name="hero_content_description">Glowing sound core surrounded by multiple voice waves</string>
+    <string name="multi_voice_test_text">This is a test of fast switching between two voices.</string>
+    <string name="multi_voice_test_success">Multiple-voice test successful.</string>
+    <string name="error_need_two_voices">This test requires two voices in one language pack.</string>
+    <string name="error_voice_repeat_mismatch">The first voice was not reproducible when selected again.</string>
+    <string name="error_voices_not_distinct">The cache did not distinguish the two voices.</string>
+    <!-- English is the intentional fallback for unsupported Android system languages. -->
+    <string name="app_name" translatable="false">Pocket TTS</string>
+    <string name="app_description">Offline speech output for Android and Layla. Language models and reference voices remain on this device.</string>
+    <string name="language_pack">Language pack</string>
+    <string name="import_language_pack">Import language pack (.zip)</string>
+    <string name="voice">Voice</string>
+    <string name="import_reference_voice">Import reference voice (.wav)</string>
+    <string name="generation_parameters">Generation parameters</string>
+    <string name="temperature_label">Temperature (0.0–2.0)</string>
+    <string name="lsd_steps_label">LSD steps (1–8)</string>
+    <string name="cpu_threads_label">CPU threads (1–8)</string>
+    <string name="save_selection">Save selection and parameters</string>
+    <string name="open_android_tts">Open Android text-to-speech</string>
+    <string name="no_language_pack">No language pack installed</string>
+    <string name="no_voice">No voice — import a WAV file</string>
+    <string name="status_no_model">No model is installed yet. Import a Pocket TTS language pack first.</string>
+    <string name="status_installed">%1$d language pack(s) installed. Reopen Layla or Android text-to-speech after making changes.</string>
+    <string name="invalid_parameters">Enter valid values within the indicated ranges.</string>
+    <string name="status_saved">Saved: %1$s. The TTS engine will reload the model for the next text.</string>
+    <string name="status_importing_pack">Importing language pack…</string>
+    <string name="status_importing_voice">Importing voice…</string>
+    <string name="status_import_success">Import successful: %1$s</string>
+    <string name="status_import_failed">Import failed: %1$s</string>
+    <string name="self_test_running">Pocket TTS self-test is running…</string>
+    <string name="self_test_success">Self-test successful: %1$d samples (%2$d s)</string>
+    <string name="self_test_failed">Self-test failed: %1$s</string>
+    <string name="error_no_model_voice">No language pack with a voice is installed</string>
+    <string name="error_native_synthesis">Native synthesis reported an error</string>
+    <string name="error_no_samples">Synthesis returned no samples</string>
+    <string name="test_text">Hello, this is an automatic test of the selected Pocket TTS voice.</string>
+    <string name="new_voice">New voice</string>
+    <string name="error_open_pack">The language pack could not be opened</string>
+    <string name="error_invalid_pack_path">Invalid path in the language pack</string>
+    <string name="error_incomplete_pack">The language pack is incomplete or incompatible</string>
+    <string name="error_backup_pack">The existing pack could not be backed up</string>
+    <string name="error_activate_pack">The language pack could not be activated</string>
+    <string name="error_open_wav">The WAV file could not be opened</string>
+    <string name="error_invalid_wav">Select a valid WAV file</string>
+</resources>

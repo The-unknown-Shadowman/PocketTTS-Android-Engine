@@ -1,0 +1,42 @@
+# Android and Gradle
+.gradle/
+.idea/
+local.properties
+**/build/
+**/.cxx/
+captures/
+*.iml
+
+# Downloaded native dependencies
+app/src/main/jniLibs/
+app/src/main/third_party/onnxruntime/
+
+# Model export environments and caches
+.venv*/
+**/__pycache__/
+*.py[cod]
+.cache/
+
+# Generated models, packages, and binaries
+*.onnx
+*.safetensors
+*.model
+*.apk
+*.aab
+*.idsig
+*.zip
+*.sha256
+release-assets/
+
+# Never commit voice recordings or other local audio
+*.wav
+*.wave
+*.mp3
+*.flac
+*.ogg
+*.m4a
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+*.swp

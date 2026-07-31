@@ -1,0 +1,2 @@
+<tts-engine xmlns:android="http://schemas.android.com/apk/res/android"
+    android:settingsActivity="ai.layla.pockettts.MainActivity" />

@@ -1,0 +1,29 @@
+name: Android CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+      - uses: android-actions/setup-android@v3
+      - name: Install SDK components
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
+      - name: Prepare ONNX Runtime
+        run: ./scripts/prepare_android_native_deps.sh
+      - name: Check repository contents
+        run: ./scripts/check_publishable.sh
+      - name: Build and lint
+        run: ./gradlew --no-daemon :app:assembleDebug :app:lintDebug
+
