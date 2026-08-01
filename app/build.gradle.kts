@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "ai.layla.pockettts"
+    namespace = "org.pockettts.android.engine"
     compileSdk = 35
     // A CI/WSL build may provide a complete NDK outside the Android SDK.
     // Android Studio falls back to the version managed by the SDK.
@@ -12,11 +12,11 @@ android {
     providers.environmentVariable("ANDROID_NDK_HOME").orNull?.let { ndkPath = it }
 
     defaultConfig {
-        applicationId = "ai.layla.pockettts"
+        applicationId = "org.pockettts.android.engine"
         minSdk = 26
         targetSdk = 35
-        versionCode = 16
-        versionName = "0.3.3"
+        versionCode = 17
+        versionName = "0.4.0"
         ndk { abiFilters += listOf("arm64-v8a") }
         externalNativeBuild {
             cmake { cppFlags += listOf("-std=c++17", "-O3") }

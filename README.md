@@ -24,6 +24,15 @@ voice.
 - Safe removal of installed language packs after confirmation
 - Automatic model selection by requested language, with English fallback
 - Stable per-voice identifiers for TTS clients such as Layla
+- In-app project information and a direct link to this repository
+
+The Android application ID is `org.pockettts.android.engine`.
+
+> **Upgrade note for pre-0.4.0 test builds:** version 0.4.0 changed the
+> application ID from `ai.layla.pockettts`. Android therefore installs it as a
+> separate application. Import model packs and reference voices again, select
+> the new engine in Android's text-to-speech settings, and remove the old test
+> app only after confirming the new installation works.
 
 ## Install and use
 

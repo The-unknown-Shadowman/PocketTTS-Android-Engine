@@ -22,7 +22,7 @@ struct Engine {
 static Engine* engine_from(jlong value) { return reinterpret_cast<Engine*>(value); }
 
 extern "C" JNIEXPORT jlong JNICALL
-Java_ai_layla_pockettts_NativePocketTts_nativeCreate(
+Java_org_pockettts_android_engine_NativePocketTts_nativeCreate(
         JNIEnv* env, jobject, jstring models, jstring voices, jstring precision,
         jfloat temperature, jint lsd_steps, jint threads) {
     const char* model_path = env->GetStringUTFChars(models, nullptr);
@@ -43,7 +43,7 @@ Java_ai_layla_pockettts_NativePocketTts_nativeCreate(
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
-Java_ai_layla_pockettts_NativePocketTts_nativeSynthesize(
+Java_org_pockettts_android_engine_NativePocketTts_nativeSynthesize(
         JNIEnv* env, jobject, jlong value, jstring text, jstring voice, jobject sink) {
     auto* engine = engine_from(value);
     if (!engine || !engine->tts) return JNI_FALSE;
@@ -78,13 +78,13 @@ Java_ai_layla_pockettts_NativePocketTts_nativeSynthesize(
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_ai_layla_pockettts_NativePocketTts_nativeStop(JNIEnv*, jobject, jlong value) {
+Java_org_pockettts_android_engine_NativePocketTts_nativeStop(JNIEnv*, jobject, jlong value) {
     auto* engine = engine_from(value);
     if (engine) if (void* stream = engine->stream.load()) ptt_stream_cancel(stream);
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_ai_layla_pockettts_NativePocketTts_nativeDestroy(JNIEnv*, jobject, jlong value) {
+Java_org_pockettts_android_engine_NativePocketTts_nativeDestroy(JNIEnv*, jobject, jlong value) {
     auto* engine = engine_from(value);
     if (!engine) return;
     if (void* stream = engine->stream.load()) ptt_stream_cancel(stream);

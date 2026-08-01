@@ -21,6 +21,11 @@
     <string name="cpu_threads_label">CPU threads (1–8)</string>
     <string name="save_selection">Save selection and parameters</string>
     <string name="open_android_tts">Open Android text-to-speech</string>
+    <string name="about_app">About this app</string>
+    <string name="about_title">About Pocket TTS</string>
+    <string name="about_message">Version %1$s\n\nAn unofficial open-source Android system TTS engine for Kyutai Pocket TTS. Speech generation runs locally on this device. Imported model packs and reference voices remain in the app’s private storage.\n\nOnly use reference voices with the speaker’s permission.\n\nSource code, build instructions, releases, and issue tracker:\n%2$s</string>
+    <string name="open_repository">Open repository</string>
+    <string name="error_open_repository">No app is available to open the repository link</string>
     <string name="no_language_pack">No language pack installed</string>
     <string name="no_voice">No voice — import a WAV file</string>
     <string name="status_no_model">No model is installed yet. Import a Pocket TTS language pack first.</string>

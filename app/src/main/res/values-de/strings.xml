@@ -19,6 +19,11 @@
     <string name="cpu_threads_label">CPU-Threads (1–8)</string>
     <string name="save_selection">Auswahl und Parameter speichern</string>
     <string name="open_android_tts">Android-Sprachausgabe öffnen</string>
+    <string name="about_app">Über diese App</string>
+    <string name="about_title">Über Pocket TTS</string>
+    <string name="about_message">Version %1$s\n\nEine inoffizielle quelloffene Android-System-TTS-Engine für Kyutai Pocket TTS. Die Spracherzeugung läuft lokal auf diesem Gerät. Importierte Modellpakete und Referenzstimmen bleiben im privaten App-Speicher.\n\nReferenzstimmen dürfen nur mit Einwilligung der sprechenden Person verwendet werden.\n\nQuellcode, Bauanleitung, Releases und Fehlermeldungen:\n%2$s</string>
+    <string name="open_repository">Repository öffnen</string>
+    <string name="error_open_repository">Der Repository-Link kann mit keiner App geöffnet werden</string>
     <string name="no_language_pack">Kein Sprachpaket installiert</string>
     <string name="no_voice">Keine Stimme — WAV importieren</string>
     <string name="status_no_model">Noch kein Modell installiert. Importiere zuerst ein Pocket-TTS-Sprachpaket.</string>

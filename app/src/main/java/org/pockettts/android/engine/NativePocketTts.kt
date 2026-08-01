@@ -1,4 +1,4 @@
-package ai.layla.pockettts
+package org.pockettts.android.engine
 
 /** Thin lifetime-safe JNI wrapper around the streaming PocketTTS C API. */
 internal class NativePocketTts(

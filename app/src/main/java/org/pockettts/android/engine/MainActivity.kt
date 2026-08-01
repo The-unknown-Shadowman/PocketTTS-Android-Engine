@@ -1,4 +1,4 @@
-package ai.layla.pockettts
+package org.pockettts.android.engine
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.speech.tts.TextToSpeech
@@ -139,6 +140,10 @@ class MainActivity : Activity() {
             text = getString(R.string.open_android_tts)
             setOnClickListener { openTtsSettings() }
         }, matchWidth(top = 12))
+        content.addView(Button(this).apply {
+            text = getString(R.string.about_app)
+            setOnClickListener { showAbout() }
+        }, matchWidth())
         statusView = TextView(this).apply {
             textSize = 14f
             setPadding(0, dp(20), 0, 0)
@@ -256,6 +261,20 @@ class MainActivity : Activity() {
     private fun openTtsSettings() {
         runCatching { startActivity(Intent("com.android.settings.TTS_SETTINGS")) }
             .onFailure { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
+    }
+
+    private fun showAbout() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.about_title)
+            .setMessage(getString(R.string.about_message, BuildConfig.VERSION_NAME, REPOSITORY_URL))
+            .setNegativeButton(android.R.string.ok, null)
+            .setPositiveButton(R.string.open_repository) { _, _ ->
+                runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(REPOSITORY_URL))) }
+                    .onFailure {
+                        Toast.makeText(this, getString(R.string.error_open_repository), Toast.LENGTH_LONG).show()
+                    }
+            }
+            .show()
     }
 
     @Deprecated("Activity result API is sufficient for this framework-only activity")
@@ -457,8 +476,9 @@ class MainActivity : Activity() {
 
     private companion object {
         const val TAG = "PocketTTS"
-        const val ACTION_SELF_TEST = "ai.layla.pockettts.SELF_TEST"
-        const val ACTION_MULTI_VOICE_SELF_TEST = "ai.layla.pockettts.MULTI_VOICE_SELF_TEST"
+        const val ACTION_SELF_TEST = "org.pockettts.android.engine.SELF_TEST"
+        const val ACTION_MULTI_VOICE_SELF_TEST = "org.pockettts.android.engine.MULTI_VOICE_SELF_TEST"
+        const val REPOSITORY_URL = "https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine"
         const val REQUEST_MODEL_PACK = 1001
         const val REQUEST_VOICE = 1002
         const val SAMPLE_RATE = 24_000

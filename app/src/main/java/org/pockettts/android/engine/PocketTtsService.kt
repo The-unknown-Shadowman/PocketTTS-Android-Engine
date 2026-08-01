@@ -1,4 +1,4 @@
-package ai.layla.pockettts
+package org.pockettts.android.engine
 
 import android.media.AudioFormat
 import android.speech.tts.SynthesisCallback
