@@ -17,6 +17,8 @@
     <string name="temperature_label">Temperatur (0,0–2,0)</string>
     <string name="lsd_steps_label">LSD-Schritte (1–8)</string>
     <string name="cpu_threads_label">CPU-Threads (1–8)</string>
+    <string name="sentence_pause_label">Pause nach Satz in ms (0–2000)</string>
+    <string name="max_text_tokens_label">Maximale Text-Tokens pro Abschnitt (10–200)</string>
     <string name="save_selection">Auswahl und Parameter speichern</string>
     <string name="open_android_tts">Android-Sprachausgabe öffnen</string>
     <string name="about_app">Über diese App</string>

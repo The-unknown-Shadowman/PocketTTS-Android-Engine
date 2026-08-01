@@ -38,6 +38,8 @@ class MainActivity : Activity() {
     private lateinit var temperatureInput: EditText
     private lateinit var lsdInput: EditText
     private lateinit var threadsInput: EditText
+    private lateinit var sentencePauseInput: EditText
+    private lateinit var maxTextTokensInput: EditText
     private lateinit var statusView: TextView
     private var packs: List<ModelPack> = emptyList()
     private var visibleVoices: List<PackVoice> = emptyList()
@@ -131,6 +133,8 @@ class MainActivity : Activity() {
         temperatureInput = addNumberField(content, getString(R.string.temperature_label), decimal = true)
         lsdInput = addNumberField(content, getString(R.string.lsd_steps_label))
         threadsInput = addNumberField(content, getString(R.string.cpu_threads_label))
+        sentencePauseInput = addNumberField(content, getString(R.string.sentence_pause_label))
+        maxTextTokensInput = addNumberField(content, getString(R.string.max_text_tokens_label))
         content.addView(Button(this).apply {
             text = getString(R.string.save_selection)
             setOnClickListener { saveSettings() }
@@ -197,9 +201,13 @@ class MainActivity : Activity() {
         temperatureInput.isEnabled = pack != null
         lsdInput.isEnabled = pack != null
         threadsInput.isEnabled = pack != null
+        sentencePauseInput.isEnabled = pack != null
+        maxTextTokensInput.isEnabled = pack != null
         temperatureInput.setText(pack?.let { ModelPackRepository.temperature(this, it).toString() }.orEmpty())
         lsdInput.setText(pack?.let { ModelPackRepository.lsdSteps(this, it).toString() }.orEmpty())
         threadsInput.setText(pack?.let { ModelPackRepository.threads(this, it).toString() }.orEmpty())
+        sentencePauseInput.setText(pack?.let { ModelPackRepository.sentencePauseMs(this, it).toString() }.orEmpty())
+        maxTextTokensInput.setText(pack?.let { ModelPackRepository.maxTextTokens(this, it).toString() }.orEmpty())
     }
 
     private fun confirmDeletePack() {
@@ -235,11 +243,27 @@ class MainActivity : Activity() {
         val temperature = temperatureInput.text.toString().replace(',', '.').toFloatOrNull()
         val lsd = lsdInput.text.toString().toIntOrNull()
         val threads = threadsInput.text.toString().toIntOrNull()
-        if (temperature == null || temperature !in 0f..2f || lsd == null || lsd !in 1..8 || threads == null || threads !in 1..8) {
+        val sentencePauseMs = sentencePauseInput.text.toString().toIntOrNull()
+        val maxTextTokens = maxTextTokensInput.text.toString().toIntOrNull()
+        if (
+            temperature == null || temperature !in 0f..2f ||
+            lsd == null || lsd !in 1..8 ||
+            threads == null || threads !in 1..8 ||
+            sentencePauseMs == null || sentencePauseMs !in 0..2000 ||
+            maxTextTokens == null || maxTextTokens !in 10..200
+        ) {
             Toast.makeText(this, getString(R.string.invalid_parameters), Toast.LENGTH_LONG).show()
             return
         }
-        ModelPackRepository.saveParameters(this, pack, temperature, lsd, threads)
+        ModelPackRepository.saveParameters(
+            this,
+            pack,
+            temperature,
+            lsd,
+            threads,
+            sentencePauseMs,
+            maxTextTokens
+        )
         visibleVoices.getOrNull(voiceSpinner.selectedItemPosition)?.let {
             ModelPackRepository.selectVoice(this, pack.id, it.id)
         }
@@ -361,7 +385,9 @@ class MainActivity : Activity() {
             pack.precision,
             0f,
             ModelPackRepository.lsdSteps(this, pack),
-            1
+            1,
+            ModelPackRepository.sentencePauseMs(this, pack),
+            ModelPackRepository.maxTextTokens(this, pack)
         ).use { tts ->
             val firstHash = synthesizeFingerprint(tts, first.fileName)
             val secondHash = synthesizeFingerprint(tts, second.fileName)
@@ -402,7 +428,9 @@ class MainActivity : Activity() {
             pack.precision,
             ModelPackRepository.temperature(this, pack),
             ModelPackRepository.lsdSteps(this, pack),
-            ModelPackRepository.threads(this, pack)
+            ModelPackRepository.threads(this, pack),
+            ModelPackRepository.sentencePauseMs(this, pack),
+            ModelPackRepository.maxTextTokens(this, pack)
         ).use { tts ->
             check(tts.synthesize(getString(R.string.test_text), voice.fileName, object : NativePocketTts.AudioSink {
                 override fun onAudio(values: FloatArray): Boolean {

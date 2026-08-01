@@ -21,6 +21,8 @@ voice.
 - Multiple language packs and multiple voices per language
 - Voice cloning from a WAV reference selected in the app
 - Per-model temperature, LSD steps, and CPU-thread settings
+- Configurable silence after sentence boundaries (250 ms by default)
+- Configurable maximum text tokens per generated segment (50 by default)
 - Safe removal of installed language packs after confirmation
 - Automatic model selection by requested language, with English fallback
 - Stable per-voice identifiers for TTS clients such as Layla

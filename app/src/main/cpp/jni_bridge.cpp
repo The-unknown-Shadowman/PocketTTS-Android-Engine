@@ -4,7 +4,7 @@
 #include <string>
 
 extern "C" {
-void* ptt_create(const char*, const char*, const char*, const char*, float, int, int);
+void* ptt_create(const char*, const char*, const char*, const char*, float, int, int, int, int);
 void ptt_destroy(void*);
 void* ptt_stream_start(void*, const char*, const char*);
 int ptt_stream_read(void*, float**, int*);
@@ -24,7 +24,8 @@ static Engine* engine_from(jlong value) { return reinterpret_cast<Engine*>(value
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_pockettts_android_engine_NativePocketTts_nativeCreate(
         JNIEnv* env, jobject, jstring models, jstring voices, jstring precision,
-        jfloat temperature, jint lsd_steps, jint threads) {
+        jfloat temperature, jint lsd_steps, jint threads, jint sentence_pause_ms,
+        jint max_text_tokens) {
     const char* model_path = env->GetStringUTFChars(models, nullptr);
     const char* voice_path = env->GetStringUTFChars(voices, nullptr);
     const char* precision_value = env->GetStringUTFChars(precision, nullptr);
@@ -34,7 +35,7 @@ Java_org_pockettts_android_engine_NativePocketTts_nativeCreate(
     // absolute tokenizer path explicitly.
     const std::string tokenizer_path = std::string(model_path) + "/tokenizer.model";
     engine->tts = ptt_create(model_path, voice_path, tokenizer_path.c_str(), precision_value,
-                             temperature, lsd_steps, threads);
+                             temperature, lsd_steps, threads, sentence_pause_ms, max_text_tokens);
     env->ReleaseStringUTFChars(models, model_path);
     env->ReleaseStringUTFChars(voices, voice_path);
     env->ReleaseStringUTFChars(precision, precision_value);

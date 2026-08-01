@@ -114,11 +114,27 @@ internal object ModelPackRepository {
     fun threads(context: Context, pack: ModelPack): Int =
         prefs(context).getInt("threads.${pack.id}", pack.defaultThreads)
 
-    fun saveParameters(context: Context, pack: ModelPack, temperature: Float, lsdSteps: Int, threads: Int) {
+    fun sentencePauseMs(context: Context, pack: ModelPack): Int =
+        prefs(context).getInt("sentence_pause_ms.${pack.id}", DEFAULT_SENTENCE_PAUSE_MS)
+
+    fun maxTextTokens(context: Context, pack: ModelPack): Int =
+        prefs(context).getInt("max_text_tokens.${pack.id}", DEFAULT_MAX_TEXT_TOKENS)
+
+    fun saveParameters(
+        context: Context,
+        pack: ModelPack,
+        temperature: Float,
+        lsdSteps: Int,
+        threads: Int,
+        sentencePauseMs: Int,
+        maxTextTokens: Int
+    ) {
         prefs(context).edit()
             .putFloat("temperature.${pack.id}", temperature.coerceIn(0f, 2f))
             .putInt("lsd.${pack.id}", lsdSteps.coerceIn(1, 8))
             .putInt("threads.${pack.id}", threads.coerceIn(1, 8))
+            .putInt("sentence_pause_ms.${pack.id}", sentencePauseMs.coerceIn(0, 2000))
+            .putInt("max_text_tokens.${pack.id}", maxTextTokens.coerceIn(10, 200))
             .apply()
     }
 
@@ -205,6 +221,8 @@ internal object ModelPackRepository {
             .remove("temperature.${pack.id}")
             .remove("lsd.${pack.id}")
             .remove("threads.${pack.id}")
+            .remove("sentence_pause_ms.${pack.id}")
+            .remove("max_text_tokens.${pack.id}")
         if (preferences.getString("selected_pack", null) == pack.id) {
             val replacement = preferredSystemPack(list(context))
             if (replacement == null) editor.remove("selected_pack")
@@ -358,4 +376,7 @@ internal object ModelPackRepository {
     }
 
     private fun prefs(context: Context) = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+
+    private const val DEFAULT_SENTENCE_PAUSE_MS = 250
+    private const val DEFAULT_MAX_TEXT_TOKENS = 50
 }

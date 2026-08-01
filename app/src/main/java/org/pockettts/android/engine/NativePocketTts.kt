@@ -7,13 +7,24 @@ internal class NativePocketTts(
     precision: String,
     temperature: Float,
     lsdSteps: Int,
-    threads: Int
+    threads: Int,
+    sentencePauseMs: Int,
+    maxTextTokens: Int
 ) : AutoCloseable {
     private var handle: Long = 0
 
     init {
         System.loadLibrary("pockettts_jni")
-        handle = nativeCreate(modelsDir, voicesDir, precision, temperature, lsdSteps, threads)
+        handle = nativeCreate(
+            modelsDir,
+            voicesDir,
+            precision,
+            temperature,
+            lsdSteps,
+            threads,
+            sentencePauseMs,
+            maxTextTokens
+        )
         check(handle != 0L) { "Pocket-TTS-Modell konnte nicht geladen werden." }
     }
 
@@ -30,7 +41,9 @@ internal class NativePocketTts(
         precision: String,
         temperature: Float,
         lsdSteps: Int,
-        threads: Int
+        threads: Int,
+        sentencePauseMs: Int,
+        maxTextTokens: Int
     ): Long
     private external fun nativeSynthesize(handle: Long, text: String, voiceFile: String, sink: AudioSink): Boolean
     private external fun nativeStop(handle: Long)

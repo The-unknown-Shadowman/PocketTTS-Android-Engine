@@ -19,6 +19,8 @@
     <string name="temperature_label">Temperature (0.0–2.0)</string>
     <string name="lsd_steps_label">LSD steps (1–8)</string>
     <string name="cpu_threads_label">CPU threads (1–8)</string>
+    <string name="sentence_pause_label">Pause after sentence in ms (0–2000)</string>
+    <string name="max_text_tokens_label">Maximum text tokens per segment (10–200)</string>
     <string name="save_selection">Save selection and parameters</string>
     <string name="open_android_tts">Open Android text-to-speech</string>
     <string name="about_app">About this app</string>

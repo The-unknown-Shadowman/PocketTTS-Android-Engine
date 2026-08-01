@@ -168,6 +168,8 @@ struct Config {
     float noise_clamp = 0.0f;
     int lsd_steps = 1, num_threads = 0, first_chunk_frames = 1, max_chunk_frames = 15;
     int eos_extra_frames = -1;  // -1 = auto-calculate from text length
+    int sentence_pause_ms = 250;
+    int max_text_tokens = 50;
     bool verbose = false;
     bool voice_cache = true;
 };
@@ -1674,6 +1676,92 @@ private:
         for (size_t i = 0; i < ids.size(); ++i) r.data[i] = ids[i];
         return r;
     }
+
+    struct TextChunk {
+        std::string text;
+        bool sentence_end = false;
+    };
+
+    static std::string trim_text(const std::string& text) {
+        const size_t start = text.find_first_not_of(" \t\n\r");
+        if (start == std::string::npos) return {};
+        const size_t end = text.find_last_not_of(" \t\n\r");
+        return text.substr(start, end - start + 1);
+    }
+
+    size_t token_count(const std::string& text) const {
+        const std::string trimmed = trim_text(text);
+        return trimmed.empty() ? 0 : tok_->encode(trimmed).size();
+    }
+
+    std::vector<std::string> split_oversized_sentence(
+            const std::string& sentence, size_t max_tokens) const {
+        std::vector<std::string> clauses;
+        std::string current;
+        for (char c : sentence) {
+            current += c;
+            if (c == ',' || c == ';' || c == ':') {
+                const std::string clause = trim_text(current);
+                if (!clause.empty()) clauses.push_back(clause);
+                current.clear();
+            }
+        }
+        current = trim_text(current);
+        if (!current.empty()) clauses.push_back(current);
+
+        std::vector<std::string> units;
+        for (const std::string& clause : clauses) {
+            if (token_count(clause) <= max_tokens) {
+                units.push_back(clause);
+                continue;
+            }
+
+            std::istringstream words(clause);
+            std::string word;
+            std::string part;
+            while (words >> word) {
+                const std::string candidate = part.empty() ? word : part + " " + word;
+                if (!part.empty() && token_count(candidate) > max_tokens) {
+                    units.push_back(part);
+                    part = word;
+                } else {
+                    part = candidate;
+                }
+            }
+            if (!part.empty()) units.push_back(part);
+        }
+
+        std::vector<std::string> chunks;
+        current.clear();
+        for (const std::string& unit : units) {
+            const std::string candidate = current.empty() ? unit : current + " " + unit;
+            if (!current.empty() && token_count(candidate) > max_tokens) {
+                chunks.push_back(current);
+                current = unit;
+            } else {
+                current = candidate;
+            }
+        }
+        if (!current.empty()) chunks.push_back(current);
+        return chunks;
+    }
+
+    std::vector<TextChunk> make_text_chunks(const std::string& text) const {
+        auto sentences = split_sentences(text);
+        if (sentences.empty()) sentences.push_back(text);
+        const size_t max_tokens = static_cast<size_t>(std::max(1, cfg_.max_text_tokens));
+        std::vector<TextChunk> result;
+        for (const std::string& sentence : sentences) {
+            std::vector<std::string> parts = token_count(sentence) <= max_tokens
+                ? std::vector<std::string>{sentence}
+                : split_oversized_sentence(sentence, max_tokens);
+            if (parts.empty()) continue;
+            for (size_t index = 0; index < parts.size(); ++index) {
+                result.push_back({parts[index], index + 1 == parts.size()});
+            }
+        }
+        return result;
+    }
     
     // ── LatentGen ───────────────────────────────────────────────────────────
     // Autoregressive latent generator. Each call to next() runs the main
@@ -1943,54 +2031,13 @@ constexpr int64_t PocketTTS::LatentGen::x_shape_[2];
 
 AudioData PocketTTS::generate(const std::string& text, const Tensor& voice, int max_frames) {
     auto _ = g_prof.time("generate_total");
-    
-    auto sentences = split_sentences(text);
-    if (sentences.empty()) sentences.push_back(text);
-    
-    if (sentences.size() == 1) {
-        std::vector<float> samples;
-        samples.reserve(max_frames * 2000);
-        stream(sentences[0], voice, [&](const float* s, size_t n) {
-            samples.insert(samples.end(), s, s + n);
-            return true;
-        }, max_frames);
-        return {std::move(samples), SR};
-    }
-    
-    // Multi-sentence: generate each independently, crossfade at boundaries
-    static constexpr int XFADE_SAMPLES = 240;  // 10ms at 24kHz
-    
-    std::vector<float> all_samples;
-    
-    for (size_t i = 0; i < sentences.size(); ++i) {
-        if (cfg_.verbose) {
-            std::cerr << "  Sentence " << (i + 1) << "/" << sentences.size() 
-                      << ": \"" << sentences[i].substr(0, 60) 
-                      << (sentences[i].size() > 60 ? "..." : "") << "\"\n";
-        }
-        
-        std::vector<float> chunk_samples;
-        stream(sentences[i], voice, [&](const float* s, size_t n) {
-            chunk_samples.insert(chunk_samples.end(), s, s + n);
-            return true;
-        }, max_frames);
-        
-        if (chunk_samples.empty()) continue;
-        
-        if (i > 0 && !all_samples.empty()) {
-            int xfade = std::min(XFADE_SAMPLES, std::min(int(all_samples.size()), int(chunk_samples.size())));
-            size_t tail_start = all_samples.size() - xfade;
-            for (int j = 0; j < xfade; ++j) {
-                float t = float(j) / float(xfade);
-                all_samples[tail_start + j] = all_samples[tail_start + j] * (1.0f - t) + chunk_samples[j] * t;
-            }
-            all_samples.insert(all_samples.end(), chunk_samples.begin() + xfade, chunk_samples.end());
-        } else {
-            all_samples.insert(all_samples.end(), chunk_samples.begin(), chunk_samples.end());
-        }
-    }
-    
-    return {std::move(all_samples), SR};
+    std::vector<float> samples;
+    samples.reserve(max_frames * 2000);
+    stream(text, voice, [&](const float* values, size_t count) {
+        samples.insert(samples.end(), values, values + count);
+        return true;
+    }, max_frames);
+    return {std::move(samples), SR};
 }
 
 void PocketTTS::stream(const std::string& text, const std::string& voice, StreamCallback cb, int max_frames) {
@@ -1998,11 +2045,19 @@ void PocketTTS::stream(const std::string& text, const std::string& voice, Stream
 }
 
 void PocketTTS::stream(const std::string& text, const Tensor& voice, StreamCallback cb, int max_frames) {
-    auto sentences = split_sentences(text);
-    if (sentences.empty()) sentences.push_back(text);
+    const auto chunks = make_text_chunks(text);
+    const size_t pause_samples = static_cast<size_t>(
+        std::max(0, cfg_.sentence_pause_ms) * SR / 1000);
+    const std::vector<float> silence(pause_samples, 0.0f);
     
-    for (size_t si = 0; si < sentences.size(); ++si) {
-        auto [prepared, eos_extra] = prepare_text(sentences[si], cfg_.eos_extra_frames);
+    for (size_t si = 0; si < chunks.size(); ++si) {
+        if (cfg_.verbose) {
+            std::cerr << "  Text chunk " << (si + 1) << "/" << chunks.size()
+                      << " (" << token_count(chunks[si].text) << " tokens): \""
+                      << chunks[si].text.substr(0, 60)
+                      << (chunks[si].text.size() > 60 ? "..." : "") << "\"\n";
+        }
+        auto [prepared, eos_extra] = prepare_text(chunks[si].text, cfg_.eos_extra_frames);
         if (prepared.empty()) continue;
         auto gen = make_gen(voice, tokenize(prepared), max_frames, eos_extra);
         dec_runner_->reset_state();  // zero existing buffers, no reallocation
@@ -2083,6 +2138,7 @@ void PocketTTS::stream(const std::string& text, const Tensor& voice, StreamCallb
             gen_thread.join();
         }
         if (aborted) return;
+        if (chunks[si].sentence_end && !silence.empty() && !cb(silence.data(), silence.size())) return;
     }
 }
 
@@ -2561,7 +2617,8 @@ extern "C" {
 
 void* ptt_create(const char* models_dir, const char* voices_dir,
                  const char* tokenizer_path, const char* precision,
-                 float temperature, int lsd_steps, int num_threads) {
+                 float temperature, int lsd_steps, int num_threads,
+                 int sentence_pause_ms, int max_text_tokens) {
     try {
         pocket_tts::Config cfg;
         if (models_dir) cfg.models_dir = models_dir;
@@ -2571,6 +2628,8 @@ void* ptt_create(const char* models_dir, const char* voices_dir,
         cfg.temperature = temperature;
         cfg.lsd_steps = lsd_steps;
         cfg.num_threads = num_threads;
+        cfg.sentence_pause_ms = std::clamp(sentence_pause_ms, 0, 2000);
+        cfg.max_text_tokens = std::clamp(max_text_tokens, 10, 200);
         return new pocket_tts::PocketTTS(cfg);
     } catch (const std::exception& e) {
         std::cerr << "[pocket-tts] init error: " << e.what() << "\n";
@@ -2725,6 +2784,8 @@ int main(int argc, char* argv[]) {
                 "  --eos-extra <int>        Extra frames after EOS (default: -1, auto)\n"
                 "  --first-chunk <int>      Frames in first decode chunk (default: 1)\n"
                 "  --max-chunk <int>        Max frames per decode chunk (default: 15)\n"
+                "  --sentence-pause <ms>    Silence after each sentence (default: 250)\n"
+                "  --max-text-tokens <int>  Max text tokens per segment (default: 50)\n"
                 "  --no-cache               Disable all disk caching (.emb and .kv files)\n"
                 "\nOutput:\n"
                 "  --stdout                 Output raw f32le PCM to stdout (for piping)\n"
@@ -2747,6 +2808,8 @@ int main(int argc, char* argv[]) {
         else if (a == "--eos-extra") cfg.eos_extra_frames = std::stoi(next());
         else if (a == "--first-chunk") cfg.first_chunk_frames = std::stoi(next());
         else if (a == "--max-chunk") cfg.max_chunk_frames = std::stoi(next());
+        else if (a == "--sentence-pause") cfg.sentence_pause_ms = std::clamp(std::stoi(next()), 0, 2000);
+        else if (a == "--max-text-tokens") cfg.max_text_tokens = std::clamp(std::stoi(next()), 10, 200);
         else if (a == "--no-cache") cfg.voice_cache = false;
         else if (a == "--stdout") stdout_output = true;
         else if (a == "--verbose") cfg.verbose = true;

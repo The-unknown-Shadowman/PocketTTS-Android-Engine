@@ -150,20 +150,29 @@ class PocketTtsService : TextToSpeechService() {
             pack.precision,
             ModelPackRepository.temperature(this, pack),
             ModelPackRepository.lsdSteps(this, pack),
-            ModelPackRepository.threads(this, pack)
+            ModelPackRepository.threads(this, pack),
+            ModelPackRepository.sentencePauseMs(this, pack),
+            ModelPackRepository.maxTextTokens(this, pack)
         )
         if (engine != null && engineKey == key) return engine!!
         engine?.close()
         engine = null
         engineKey = null
-        Log.i(TAG, "ENGINE_LOAD pack=${pack.id} precision=${key.precision} temperature=${key.temperature} lsd=${key.lsdSteps} threads=${key.threads}")
+        Log.i(
+            TAG,
+            "ENGINE_LOAD pack=${pack.id} precision=${key.precision} temperature=${key.temperature} " +
+                "lsd=${key.lsdSteps} threads=${key.threads} pauseMs=${key.sentencePauseMs} " +
+                "maxTextTokens=${key.maxTextTokens}"
+        )
         return NativePocketTts(
             pack.modelsDir.absolutePath,
             pack.voicesDir.absolutePath,
             key.precision,
             key.temperature,
             key.lsdSteps,
-            key.threads
+            key.threads,
+            key.sentencePauseMs,
+            key.maxTextTokens
         ).also {
             engine = it
             engineKey = key
@@ -185,7 +194,9 @@ class PocketTtsService : TextToSpeechService() {
         val precision: String,
         val temperature: Float,
         val lsdSteps: Int,
-        val threads: Int
+        val threads: Int,
+        val sentencePauseMs: Int,
+        val maxTextTokens: Int
     )
 
     private companion object {

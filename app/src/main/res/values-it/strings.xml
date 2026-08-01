@@ -17,6 +17,8 @@
     <string name="temperature_label">Temperatura (0,0–2,0)</string>
     <string name="lsd_steps_label">Passaggi LSD (1–8)</string>
     <string name="cpu_threads_label">Thread CPU (1–8)</string>
+    <string name="sentence_pause_label">Pausa dopo la frase in ms (0–2000)</string>
+    <string name="max_text_tokens_label">Token di testo massimi per segmento (10–200)</string>
     <string name="save_selection">Salva selezione e parametri</string>
     <string name="open_android_tts">Apri sintesi vocale Android</string>
     <string name="about_app">Informazioni sull’app</string>
