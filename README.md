@@ -23,12 +23,24 @@ voice.
 - Per-model temperature, LSD steps, and CPU-thread settings
 - Configurable silence after sentence boundaries (250 ms by default)
 - Configurable maximum text tokens per generated segment (50 by default)
+- Token-based generation length guard matching the upstream Python runtime
 - Safe removal of installed language packs after confirmation
 - Automatic model selection by requested language, with English fallback
 - Stable per-voice identifiers for TTS clients such as Layla
 - In-app project information and a direct link to this repository
 
 The Android application ID is `org.pockettts.android.engine`.
+
+Recommended starting values from an Android ARM64 benchmark (108 syntheses,
+78 additionally checked with speech recognition):
+
+| Model pack | Temperature | LSD steps | Threads | Sentence pause | Segment size |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| German FP32 | 0.5 | 1 | 4 | 250 ms | 50 tokens |
+| German 24L FP32 | 0.3 | 1 | 3 | 250 ms | 50 tokens |
+
+These are defaults for newly imported release packs, not hard limits. Existing
+per-pack settings are preserved when the app is upgraded.
 
 > **Upgrade note for pre-0.4.0 test builds:** version 0.4.0 changed the
 > application ID from `ai.layla.pockettts`. Android therefore installs it as a

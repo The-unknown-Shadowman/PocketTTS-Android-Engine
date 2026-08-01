@@ -1694,6 +1694,18 @@ private:
         return trimmed.empty() ? 0 : tok_->encode(trimmed).size();
     }
 
+    // Match TTSModel._estimate_max_gen_len() from the upstream Python runtime.
+    // A fixed 500-frame ceiling allowed a missed EOS prediction to create up to
+    // roughly 40 seconds of audio even for a short sentence.
+    static int estimated_max_generation_frames(size_t text_tokens) {
+        static constexpr double TOKENS_PER_SECOND_ESTIMATE = 3.0;
+        static constexpr double GENERATION_SECONDS_PADDING = 2.0;
+        static constexpr double MODEL_FRAME_RATE = 12.5;
+        const double seconds = text_tokens / TOKENS_PER_SECOND_ESTIMATE
+            + GENERATION_SECONDS_PADDING;
+        return std::max(1, static_cast<int>(std::ceil(seconds * MODEL_FRAME_RATE)));
+    }
+
     std::vector<std::string> split_oversized_sentence(
             const std::string& sentence, size_t max_tokens) const {
         std::vector<std::string> clauses;
@@ -2059,7 +2071,15 @@ void PocketTTS::stream(const std::string& text, const Tensor& voice, StreamCallb
         }
         auto [prepared, eos_extra] = prepare_text(chunks[si].text, cfg_.eos_extra_frames);
         if (prepared.empty()) continue;
-        auto gen = make_gen(voice, tokenize(prepared), max_frames, eos_extra);
+        auto text_tokens = tokenize(prepared);
+        const int token_limited_frames = estimated_max_generation_frames(text_tokens.numel());
+        const int effective_max_frames = std::min(max_frames, token_limited_frames);
+        if (cfg_.verbose) {
+            std::cerr << "  Generation frame limit: " << effective_max_frames
+                      << " (requested " << max_frames << ", token estimate "
+                      << token_limited_frames << ")\n";
+        }
+        auto gen = make_gen(voice, text_tokens, effective_max_frames, eos_extra);
         dec_runner_->reset_state();  // zero existing buffers, no reallocation
         
         // Pipelined: generator thread produces latent frames into a queue,

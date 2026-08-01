@@ -44,6 +44,7 @@ python "$ROOT/vendor/PocketTTS.cpp/export_onnx.py" "${EXPORT_ARGS[@]}"
 VOICE_ID=""
 VOICE_NAME=""
 TEMPERATURE=0.7
+THREADS=2
 case "$LANGUAGE" in
   english|english_24l) VOICE_ID=alba; VOICE_NAME=Alba; TEMPERATURE=0.3 ;;
   german|german_24l) VOICE_ID=juergen; VOICE_NAME=Jürgen ;;
@@ -51,6 +52,15 @@ case "$LANGUAGE" in
   portuguese|portuguese_24l) VOICE_ID=rafael; VOICE_NAME=Rafael ;;
   spanish|spanish_24l) VOICE_ID=lola; VOICE_NAME=Lola ;;
 esac
+
+# FP32 defaults measured on an ARM64 Android 16 device. Keep the established
+# conservative defaults for unbenchmarked INT8 variants.
+if [ "$PRECISION" = "fp32" ]; then
+  case "$LANGUAGE" in
+    german) TEMPERATURE=0.5; THREADS=4 ;;
+    german_24l) TEMPERATURE=0.3; THREADS=3 ;;
+  esac
+fi
 
 BUILD_ARGS=(
   --models-dir "$OUT" \
@@ -61,7 +71,7 @@ BUILD_ARGS=(
   --precision "$PRECISION" \
   --temperature "$TEMPERATURE" \
   --lsd-steps 1 \
-  --threads 2 \
+  --threads "$THREADS" \
   --license-file "$ROOT/MODEL_LICENSE.md" \
   --source-url "https://huggingface.co/kyutai/pocket-tts"
 )
