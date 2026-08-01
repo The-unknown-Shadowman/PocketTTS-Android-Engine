@@ -7,6 +7,7 @@ val releaseKeystorePath = providers.environmentVariable("POCKETTTS_KEYSTORE_PATH
 val releaseKeystorePassword = providers.environmentVariable("POCKETTTS_KEYSTORE_PASSWORD").orNull
 val releaseKeyAlias = providers.environmentVariable("POCKETTTS_KEY_ALIAS").orNull
 val releaseKeyPassword = providers.environmentVariable("POCKETTTS_KEY_PASSWORD").orNull
+val requiredNdkVersion = "27.2.12479018"
 val hasReleaseSigning = listOf(
     releaseKeystorePath,
     releaseKeystorePassword,
@@ -19,8 +20,14 @@ android {
     compileSdk = 35
     // A CI/WSL build may provide a complete NDK outside the Android SDK.
     // Android Studio falls back to the version managed by the SDK.
-    ndkVersion = "27.2.12479018"
-    providers.environmentVariable("ANDROID_NDK_HOME").orNull?.let { ndkPath = it }
+    ndkVersion = requiredNdkVersion
+    providers.environmentVariable("ANDROID_NDK_HOME").orNull?.let { candidate ->
+        val sourceProperties = file("$candidate/source.properties")
+        val matchesRequiredVersion = sourceProperties.isFile && sourceProperties
+            .readLines()
+            .any { it.trim() == "Pkg.Revision = $requiredNdkVersion" }
+        if (matchesRequiredVersion) ndkPath = candidate
+    }
 
     defaultConfig {
         applicationId = "org.pockettts.android.engine"
