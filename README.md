@@ -62,6 +62,27 @@ per-pack settings are preserved when the app is upgraded.
 
 For Layla-specific details, see [docs/LAYLA.md](docs/LAYLA.md).
 
+## Voice-cloning sample quality
+
+The reference recording is part of the synthesis input, not merely a speaker
+identifier. Pocket TTS explicitly notes that characteristics and defects in the
+sample are reproduced, so prompt quality can have a larger audible effect than
+small changes to the generation parameters. Use a clean, dry recording with
+natural speech and consistent volume; avoid background noise, music, echo,
+reverberation, clipping, aggressive noise reduction, and long leading or
+trailing silence. Testing several 5-15 second excerpts is worthwhile.
+
+In one local German comparison, a clean excerpt from the
+[Thorsten-Voice](https://github.com/thorstenMueller/Thorsten-Voice) project
+produced fewer artifacts than the bundled Jürgen reference. This is an
+observation about the tested prompt recordings, not a universal ranking of the
+speakers or models. Thorsten-Voice also provides German models for
+[Piper TTS](https://huggingface.co/Thorsten-Voice/Piper); Piper itself is not
+used by this Android engine. See the
+[Pocket TTS voice-cloning guidance](https://github.com/kyutai-labs/pocket-tts#trying-it-with-the-cli)
+and always verify the source and license of any recording before importing or
+redistributing it.
+
 ## Build the Android app
 
 The repository intentionally does not commit generated ONNX Runtime binaries,
