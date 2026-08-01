@@ -68,7 +68,7 @@ internal object ModelPackRepository {
     fun list(context: Context): List<ModelPack> {
         migrateLegacy(context)
         return packsRoot(context).listFiles().orEmpty()
-            .filter(File::isDirectory)
+            .filter { it.isDirectory && !it.name.startsWith(".") }
             .mapNotNull { runCatching { readManifest(it) }.getOrNull() }
             .filter(::isValid)
             .sortedBy { it.displayName.lowercase(Locale.ROOT) }
@@ -183,6 +183,34 @@ internal object ModelPackRepository {
         writeManifest(updated)
         selectVoice(context, pack.id, id)
         return updated
+    }
+
+    fun deletePack(context: Context, pack: ModelPack) {
+        val root = packsRoot(context).canonicalFile
+        val target = pack.root.canonicalFile
+        require(target.parentFile == root && target.name == pack.id) {
+            context.getString(R.string.error_delete_pack)
+        }
+        if (!target.exists()) return
+
+        val trash = File(root, ".delete-${pack.id}-${UUID.randomUUID()}")
+        require(target.renameTo(trash)) { context.getString(R.string.error_delete_pack) }
+        if (!trash.deleteRecursively() || trash.exists()) {
+            throw IllegalStateException(context.getString(R.string.error_delete_pack))
+        }
+
+        val preferences = prefs(context)
+        val editor = preferences.edit()
+            .remove("voice.${pack.id}")
+            .remove("temperature.${pack.id}")
+            .remove("lsd.${pack.id}")
+            .remove("threads.${pack.id}")
+        if (preferences.getString("selected_pack", null) == pack.id) {
+            val replacement = preferredSystemPack(list(context))
+            if (replacement == null) editor.remove("selected_pack")
+            else editor.putString("selected_pack", replacement.id)
+        }
+        editor.apply()
     }
 
     fun voiceName(pack: ModelPack, voice: PackVoice): String = "${pack.id}::${voice.id}"

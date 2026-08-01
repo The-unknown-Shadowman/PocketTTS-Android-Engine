@@ -8,6 +8,9 @@
     <string name="app_description">Offline-Sprachausgabe für Android und Layla. Sprachmodelle und Referenzstimmen bleiben auf diesem Gerät.</string>
     <string name="language_pack">Sprachpaket</string>
     <string name="import_language_pack">Sprachpaket (.zip) importieren</string>
+    <string name="delete_language_pack">Ausgewähltes Sprachpaket löschen</string>
+    <string name="delete_pack_title">Sprachpaket löschen?</string>
+    <string name="delete_pack_message">„%1$s“ und alle zugehörigen Stimmen von diesem Gerät löschen?</string>
     <string name="voice">Stimme</string>
     <string name="import_reference_voice">Referenzstimme (.wav) importieren</string>
     <string name="generation_parameters">Generierungsparameter</string>
@@ -26,6 +29,9 @@
     <string name="status_importing_voice">Stimme wird importiert…</string>
     <string name="status_import_success">Import erfolgreich: %1$s</string>
     <string name="status_import_failed">Import fehlgeschlagen: %1$s</string>
+    <string name="status_deleting_pack">Wird gelöscht: %1$s…</string>
+    <string name="status_delete_success">Gelöscht: %1$s</string>
+    <string name="status_delete_failed">Löschen fehlgeschlagen: %1$s</string>
     <string name="self_test_running">Pocket-TTS-Selbsttest läuft…</string>
     <string name="self_test_success">Selbsttest erfolgreich: %1$d Samples (%2$d s)</string>
     <string name="self_test_failed">Selbsttest fehlgeschlagen: %1$s</string>
@@ -39,6 +45,7 @@
     <string name="error_incomplete_pack">Sprachpaket ist unvollständig oder inkompatibel</string>
     <string name="error_backup_pack">Vorhandenes Paket konnte nicht gesichert werden</string>
     <string name="error_activate_pack">Sprachpaket konnte nicht aktiviert werden</string>
+    <string name="error_delete_pack">Das ausgewählte Sprachpaket konnte nicht gelöscht werden</string>
     <string name="error_open_wav">WAV-Datei konnte nicht geöffnet werden</string>
     <string name="error_invalid_wav">Bitte eine gültige WAV-Datei auswählen</string>
 </resources>

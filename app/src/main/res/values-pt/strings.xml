@@ -8,6 +8,9 @@
     <string name="app_description">Síntese de voz offline para Android e Layla. Os modelos de idioma e as vozes de referência permanecem neste dispositivo.</string>
     <string name="language_pack">Pacote de idioma</string>
     <string name="import_language_pack">Importar pacote de idioma (.zip)</string>
+    <string name="delete_language_pack">Eliminar o pacote selecionado</string>
+    <string name="delete_pack_title">Eliminar pacote de idioma?</string>
+    <string name="delete_pack_message">Eliminar “%1$s” e todas as respetivas vozes deste dispositivo?</string>
     <string name="voice">Voz</string>
     <string name="import_reference_voice">Importar voz de referência (.wav)</string>
     <string name="generation_parameters">Parâmetros de geração</string>
@@ -26,6 +29,9 @@
     <string name="status_importing_voice">A importar voz…</string>
     <string name="status_import_success">Importação concluída: %1$s</string>
     <string name="status_import_failed">Falha na importação: %1$s</string>
+    <string name="status_deleting_pack">A eliminar: %1$s…</string>
+    <string name="status_delete_success">Eliminado: %1$s</string>
+    <string name="status_delete_failed">Falha ao eliminar: %1$s</string>
     <string name="self_test_running">Autoteste do Pocket TTS em execução…</string>
     <string name="self_test_success">Autoteste concluído: %1$d amostras (%2$d s)</string>
     <string name="self_test_failed">Falha no autoteste: %1$s</string>
@@ -39,6 +45,7 @@
     <string name="error_incomplete_pack">O pacote de idioma está incompleto ou é incompatível</string>
     <string name="error_backup_pack">Não foi possível criar uma cópia do pacote existente</string>
     <string name="error_activate_pack">Não foi possível ativar o pacote de idioma</string>
+    <string name="error_delete_pack">Não foi possível eliminar o pacote de idioma selecionado</string>
     <string name="error_open_wav">Não foi possível abrir o ficheiro WAV</string>
     <string name="error_invalid_wav">Selecione um ficheiro WAV válido</string>
 </resources>

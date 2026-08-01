@@ -8,6 +8,9 @@
     <string name="app_description">Síntesis de voz sin conexión para Android y Layla. Los modelos de idioma y las voces de referencia permanecen en este dispositivo.</string>
     <string name="language_pack">Paquete de idioma</string>
     <string name="import_language_pack">Importar paquete de idioma (.zip)</string>
+    <string name="delete_language_pack">Eliminar el paquete seleccionado</string>
+    <string name="delete_pack_title">¿Eliminar el paquete de idioma?</string>
+    <string name="delete_pack_message">¿Eliminar “%1$s” y todas sus voces de este dispositivo?</string>
     <string name="voice">Voz</string>
     <string name="import_reference_voice">Importar voz de referencia (.wav)</string>
     <string name="generation_parameters">Parámetros de generación</string>
@@ -26,6 +29,9 @@
     <string name="status_importing_voice">Importando voz…</string>
     <string name="status_import_success">Importación correcta: %1$s</string>
     <string name="status_import_failed">Error de importación: %1$s</string>
+    <string name="status_deleting_pack">Eliminando: %1$s…</string>
+    <string name="status_delete_success">Eliminado: %1$s</string>
+    <string name="status_delete_failed">Error al eliminar: %1$s</string>
     <string name="self_test_running">Ejecutando la prueba automática de Pocket TTS…</string>
     <string name="self_test_success">Prueba correcta: %1$d muestras (%2$d s)</string>
     <string name="self_test_failed">Error en la prueba: %1$s</string>
@@ -39,6 +45,7 @@
     <string name="error_incomplete_pack">El paquete de idioma está incompleto o no es compatible</string>
     <string name="error_backup_pack">No se pudo guardar una copia del paquete existente</string>
     <string name="error_activate_pack">No se pudo activar el paquete de idioma</string>
+    <string name="error_delete_pack">No se pudo eliminar el paquete de idioma seleccionado</string>
     <string name="error_open_wav">No se pudo abrir el archivo WAV</string>
     <string name="error_invalid_wav">Selecciona un archivo WAV válido</string>
 </resources>

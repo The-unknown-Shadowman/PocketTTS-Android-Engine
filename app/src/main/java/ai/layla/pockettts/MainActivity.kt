@@ -1,6 +1,7 @@
 package ai.layla.pockettts
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
@@ -32,6 +33,7 @@ class MainActivity : Activity() {
     private lateinit var packSpinner: Spinner
     private lateinit var voiceSpinner: Spinner
     private lateinit var importVoiceButton: Button
+    private lateinit var deletePackButton: Button
     private lateinit var temperatureInput: EditText
     private lateinit var lsdInput: EditText
     private lateinit var threadsInput: EditText
@@ -109,6 +111,11 @@ class MainActivity : Activity() {
             text = getString(R.string.import_language_pack)
             setOnClickListener { openDocument(REQUEST_MODEL_PACK, "application/zip") }
         }, matchWidth())
+        deletePackButton = Button(this).apply {
+            text = getString(R.string.delete_language_pack)
+            setOnClickListener { confirmDeletePack() }
+        }
+        content.addView(deletePackButton, matchWidth())
 
         content.addLabel(getString(R.string.voice))
         voiceSpinner = Spinner(this)
@@ -181,12 +188,41 @@ class MainActivity : Activity() {
         val voiceIndex = visibleVoices.indexOfFirst { it.id == selectedVoice }.coerceAtLeast(0)
         if (visibleVoices.isNotEmpty()) voiceSpinner.setSelection(voiceIndex)
         importVoiceButton.isEnabled = pack != null
+        deletePackButton.isEnabled = pack != null
         temperatureInput.isEnabled = pack != null
         lsdInput.isEnabled = pack != null
         threadsInput.isEnabled = pack != null
         temperatureInput.setText(pack?.let { ModelPackRepository.temperature(this, it).toString() }.orEmpty())
         lsdInput.setText(pack?.let { ModelPackRepository.lsdSteps(this, it).toString() }.orEmpty())
         threadsInput.setText(pack?.let { ModelPackRepository.threads(this, it).toString() }.orEmpty())
+    }
+
+    private fun confirmDeletePack() {
+        val pack = currentPack ?: return
+        AlertDialog.Builder(this)
+            .setTitle(R.string.delete_pack_title)
+            .setMessage(getString(R.string.delete_pack_message, pack.displayName))
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(R.string.delete_language_pack) { _, _ -> deletePack(pack) }
+            .show()
+    }
+
+    private fun deletePack(pack: ModelPack) {
+        statusView.text = getString(R.string.status_deleting_pack, pack.displayName)
+        deletePackButton.isEnabled = false
+        thread(name = "pockettts-delete-pack") {
+            runCatching { ModelPackRepository.deletePack(this, pack) }
+                .onSuccess {
+                    runOnUiThread { refreshData(getString(R.string.status_delete_success, pack.displayName)) }
+                }
+                .onFailure { error ->
+                    Log.e(TAG, "DELETE_PACK_FAILED pack=${pack.id}", error)
+                    runOnUiThread {
+                        deletePackButton.isEnabled = currentPack != null
+                        statusView.text = getString(R.string.status_delete_failed, error.message.orEmpty())
+                    }
+                }
+        }
     }
 
     private fun saveSettings() {

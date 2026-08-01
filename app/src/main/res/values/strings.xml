@@ -10,6 +10,9 @@
     <string name="app_description">Offline speech output for Android and Layla. Language models and reference voices remain on this device.</string>
     <string name="language_pack">Language pack</string>
     <string name="import_language_pack">Import language pack (.zip)</string>
+    <string name="delete_language_pack">Delete selected language pack</string>
+    <string name="delete_pack_title">Delete language pack?</string>
+    <string name="delete_pack_message">Delete “%1$s” and all of its voices from this device?</string>
     <string name="voice">Voice</string>
     <string name="import_reference_voice">Import reference voice (.wav)</string>
     <string name="generation_parameters">Generation parameters</string>
@@ -28,6 +31,9 @@
     <string name="status_importing_voice">Importing voice…</string>
     <string name="status_import_success">Import successful: %1$s</string>
     <string name="status_import_failed">Import failed: %1$s</string>
+    <string name="status_deleting_pack">Deleting: %1$s…</string>
+    <string name="status_delete_success">Deleted: %1$s</string>
+    <string name="status_delete_failed">Deletion failed: %1$s</string>
     <string name="self_test_running">Pocket TTS self-test is running…</string>
     <string name="self_test_success">Self-test successful: %1$d samples (%2$d s)</string>
     <string name="self_test_failed">Self-test failed: %1$s</string>
@@ -41,6 +47,7 @@
     <string name="error_incomplete_pack">The language pack is incomplete or incompatible</string>
     <string name="error_backup_pack">The existing pack could not be backed up</string>
     <string name="error_activate_pack">The language pack could not be activated</string>
+    <string name="error_delete_pack">The selected language pack could not be deleted</string>
     <string name="error_open_wav">The WAV file could not be opened</string>
     <string name="error_invalid_wav">Select a valid WAV file</string>
 </resources>

@@ -8,6 +8,9 @@
     <string name="app_description">Sintesi vocale offline per Android e Layla. I modelli linguistici e le voci di riferimento restano su questo dispositivo.</string>
     <string name="language_pack">Pacchetto lingua</string>
     <string name="import_language_pack">Importa pacchetto lingua (.zip)</string>
+    <string name="delete_language_pack">Elimina il pacchetto selezionato</string>
+    <string name="delete_pack_title">Eliminare il pacchetto lingua?</string>
+    <string name="delete_pack_message">Eliminare “%1$s” e tutte le relative voci da questo dispositivo?</string>
     <string name="voice">Voce</string>
     <string name="import_reference_voice">Importa voce di riferimento (.wav)</string>
     <string name="generation_parameters">Parametri di generazione</string>
@@ -26,6 +29,9 @@
     <string name="status_importing_voice">Importazione della voce…</string>
     <string name="status_import_success">Importazione riuscita: %1$s</string>
     <string name="status_import_failed">Importazione non riuscita: %1$s</string>
+    <string name="status_deleting_pack">Eliminazione: %1$s…</string>
+    <string name="status_delete_success">Eliminato: %1$s</string>
+    <string name="status_delete_failed">Eliminazione non riuscita: %1$s</string>
     <string name="self_test_running">Autotest Pocket TTS in corso…</string>
     <string name="self_test_success">Autotest riuscito: %1$d campioni (%2$d s)</string>
     <string name="self_test_failed">Autotest non riuscito: %1$s</string>
@@ -39,6 +45,7 @@
     <string name="error_incomplete_pack">Il pacchetto lingua è incompleto o incompatibile</string>
     <string name="error_backup_pack">Impossibile creare una copia del pacchetto esistente</string>
     <string name="error_activate_pack">Impossibile attivare il pacchetto lingua</string>
+    <string name="error_delete_pack">Impossibile eliminare il pacchetto lingua selezionato</string>
     <string name="error_open_wav">Impossibile aprire il file WAV</string>
     <string name="error_invalid_wav">Seleziona un file WAV valido</string>
 </resources>
