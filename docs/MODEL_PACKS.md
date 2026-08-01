@@ -1,5 +1,10 @@
 # Model packs
 
+> **Security:** ONNX files are complex native-runtime inputs. Import model packs
+> only from sources you trust. The Android importer rejects path traversal,
+> excessive entry counts, individual entries larger than 2 GiB, and archives
+> expanding beyond 3 GiB, but these checks cannot make an untrusted model safe.
+
 Model weights are deliberately separate from the APK. The app imports a ZIP
 with the following structure:
 

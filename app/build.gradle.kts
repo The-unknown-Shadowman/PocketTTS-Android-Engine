@@ -3,6 +3,17 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+val releaseKeystorePath = providers.environmentVariable("POCKETTTS_KEYSTORE_PATH").orNull
+val releaseKeystorePassword = providers.environmentVariable("POCKETTTS_KEYSTORE_PASSWORD").orNull
+val releaseKeyAlias = providers.environmentVariable("POCKETTTS_KEY_ALIAS").orNull
+val releaseKeyPassword = providers.environmentVariable("POCKETTTS_KEY_PASSWORD").orNull
+val hasReleaseSigning = listOf(
+    releaseKeystorePath,
+    releaseKeystorePassword,
+    releaseKeyAlias,
+    releaseKeyPassword
+).all { !it.isNullOrBlank() }
+
 android {
     namespace = "org.pockettts.android.engine"
     compileSdk = 35
@@ -15,8 +26,8 @@ android {
         applicationId = "org.pockettts.android.engine"
         minSdk = 26
         targetSdk = 35
-        versionCode = 19
-        versionName = "0.4.2"
+        versionCode = 20
+        versionName = "0.5.0"
         ndk { abiFilters += listOf("arm64-v8a") }
         externalNativeBuild {
             cmake { cppFlags += listOf("-std=c++17", "-O3") }
@@ -31,6 +42,24 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions { jvmTarget = "17" }
+
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = file(requireNotNull(releaseKeystorePath))
+                storePassword = releaseKeystorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
+    buildTypes {
+        getByName("release") {
+            if (hasReleaseSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            }
+        }
+    }
 }
 
 dependencies {

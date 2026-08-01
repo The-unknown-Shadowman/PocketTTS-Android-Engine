@@ -8,6 +8,10 @@
     <string name="app_description">Offline-Sprachausgabe für Android und Layla. Sprachmodelle und Referenzstimmen bleiben auf diesem Gerät.</string>
     <string name="language_pack">Sprachpaket</string>
     <string name="import_language_pack">Sprachpaket (.zip) importieren</string>
+    <string name="import_pack_warning_title">Vertrauenswürdiges Modellpaket importieren?</string>
+    <string name="import_pack_warning_message">ONNX-Modellpakete werden von nativem Code verarbeitet. Ein fehlerhaftes oder bösartiges Paket kann die Engine zum Absturz bringen oder ihre privaten App-Daten gefährden. Fahre nur fort, wenn du der Quelle vertraust.</string>
+    <string name="continue_import">Datei auswählen</string>
+    <string name="error_pack_limits">Das Modellpaket überschreitet die erlaubten Archivgrenzen.</string>
     <string name="delete_language_pack">Ausgewähltes Sprachpaket löschen</string>
     <string name="delete_pack_title">Sprachpaket löschen?</string>
     <string name="delete_pack_message">„%1$s“ und alle zugehörigen Stimmen von diesem Gerät löschen?</string>

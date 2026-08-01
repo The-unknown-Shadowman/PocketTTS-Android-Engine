@@ -8,6 +8,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStream
 import java.io.RandomAccessFile
 import java.util.Locale
 import java.util.UUID
@@ -144,15 +145,26 @@ internal object ModelPackRepository {
             context.contentResolver.openInputStream(uri).use { input ->
                 requireNotNull(input) { context.getString(R.string.error_open_pack) }
                 ZipInputStream(input.buffered()).use { zip ->
+                    var entryCount = 0
+                    var extractedBytes = 0L
                     while (true) {
                         val entry = zip.nextEntry ?: break
+                        entryCount++
+                        require(entryCount <= MAX_ARCHIVE_ENTRIES) {
+                            context.getString(R.string.error_pack_limits)
+                        }
                         val target = File(staging, entry.name)
                         require(target.canonicalPath.startsWith(staging.canonicalPath + File.separator)) {
                             context.getString(R.string.error_invalid_pack_path)
                         }
                         if (entry.isDirectory) target.mkdirs() else {
                             target.parentFile?.mkdirs()
-                            FileOutputStream(target).use { zip.copyTo(it) }
+                            extractedBytes += copyLimited(
+                                zip,
+                                target,
+                                extractedBytes,
+                                context.getString(R.string.error_pack_limits)
+                            )
                         }
                         zip.closeEntry()
                     }
@@ -362,6 +374,27 @@ internal object ModelPackRepository {
         }
     }
 
+    private fun copyLimited(
+        input: InputStream,
+        target: File,
+        alreadyExtracted: Long,
+        limitError: String
+    ): Long {
+        val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+        var entryBytes = 0L
+        FileOutputStream(target).use { output ->
+            while (true) {
+                val read = input.read(buffer)
+                if (read < 0) break
+                entryBytes += read
+                require(entryBytes <= MAX_ARCHIVE_ENTRY_BYTES) { limitError }
+                require(alreadyExtracted + entryBytes <= MAX_ARCHIVE_BYTES) { limitError }
+                output.write(buffer, 0, read)
+            }
+        }
+        return entryBytes
+    }
+
     private fun sanitizeId(raw: String): String {
         val id = raw.lowercase(Locale.ROOT).replace(Regex("[^a-z0-9._-]+"), "-").trim('-')
         require(id.isNotBlank() && id == raw) { "Ungültige Paket-ID" }
@@ -379,4 +412,7 @@ internal object ModelPackRepository {
 
     private const val DEFAULT_SENTENCE_PAUSE_MS = 250
     private const val DEFAULT_MAX_TEXT_TOKENS = 50
+    private const val MAX_ARCHIVE_ENTRIES = 64
+    private const val MAX_ARCHIVE_ENTRY_BYTES = 2L * 1024 * 1024 * 1024
+    private const val MAX_ARCHIVE_BYTES = 3L * 1024 * 1024 * 1024
 }

@@ -15,8 +15,11 @@ if find . \
   -type f \( \
   -iname '*.wav' -o -iname '*.wave' -o -iname '*.mp3' -o -iname '*.flac' \
   -o -iname '*.onnx' -o -iname '*.safetensors' -o -iname '*.apk' \
+  -o -iname '*.jks' -o -iname '*.keystore' -o -iname '*.p12' \
+  -o -iname '*.pem' -o -iname '.env' -o -iname '*.env' \
+  -o -iname 'keystore.properties' -o -iname 'signing-secret*' \
   \) -print | grep -q .; then
-  echo "Refusing publication: generated model, APK, or audio files are present." >&2
+  echo "Refusing publication: generated media, binaries, or signing files are present." >&2
   exit 1
 fi
 

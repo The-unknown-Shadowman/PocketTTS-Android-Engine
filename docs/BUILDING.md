@@ -15,9 +15,11 @@ available to Linux.
 
 ## Prepare ONNX Runtime
 
-The app uses ONNX Runtime Android 1.20.0. A newer runtime is not automatically
-selected because 1.23.x produced an illegal-instruction crash in the voice
-encoder on a tested Snapdragon 8 Elite device.
+The app uses ONNX Runtime Android 1.20.0. Downloaded binaries and headers are
+verified with pinned SHA-256 checksums. Runtime updates are tested explicitly
+because tested releases from 1.21.1 through 1.28.0 produced either an
+illegal-instruction crash or severe 24-layer regressions on a Snapdragon 8
+Elite device. Re-evaluate this pin as newer Android builds become available.
 
 ```bash
 ./scripts/prepare_android_native_deps.sh
@@ -67,3 +69,24 @@ The current Gradle configuration builds only `arm64-v8a`. Supporting another
 ABI requires a matching ONNX Runtime native library and testing all native
 dependencies for that ABI.
 
+## Create a signed release build
+
+Release credentials must stay outside the repository. Set all four variables
+below; if any is missing, Gradle deliberately creates an unsigned release APK.
+
+```bash
+export POCKETTTS_KEYSTORE_PATH=/absolute/private/path/release.jks
+export POCKETTTS_KEYSTORE_PASSWORD='store password'
+export POCKETTTS_KEY_ALIAS='pockettts-release'
+export POCKETTTS_KEY_PASSWORD='key password'
+./gradlew clean :app:assembleRelease :app:lintRelease
+```
+
+Back up the keystore and its recovery secret securely. Every future update for
+the same Android application ID must be signed with this exact key. Never add a
+keystore, password file, or signing environment script to Git.
+
+The pre-0.5.0 review APKs used Android's generic debug certificate. Android
+cannot install a production-signed 0.5.0 APK over those builds. Preserve any
+needed model packs and custom reference voices, uninstall the review build,
+then install the signed release and import the data again.

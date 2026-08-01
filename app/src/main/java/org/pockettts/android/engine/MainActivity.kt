@@ -112,7 +112,7 @@ class MainActivity : Activity() {
         content.addView(packSpinner, matchWidth())
         content.addView(Button(this).apply {
             text = getString(R.string.import_language_pack)
-            setOnClickListener { openDocument(REQUEST_MODEL_PACK, "application/zip") }
+            setOnClickListener { confirmModelPackImport() }
         }, matchWidth())
         deletePackButton = Button(this).apply {
             text = getString(R.string.delete_language_pack)
@@ -217,6 +217,17 @@ class MainActivity : Activity() {
             .setMessage(getString(R.string.delete_pack_message, pack.displayName))
             .setNegativeButton(android.R.string.cancel, null)
             .setPositiveButton(R.string.delete_language_pack) { _, _ -> deletePack(pack) }
+            .show()
+    }
+
+    private fun confirmModelPackImport() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.import_pack_warning_title)
+            .setMessage(R.string.import_pack_warning_message)
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(R.string.continue_import) { _, _ ->
+                openDocument(REQUEST_MODEL_PACK, "application/zip")
+            }
             .show()
     }
 

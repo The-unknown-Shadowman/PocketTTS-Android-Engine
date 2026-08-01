@@ -8,6 +8,10 @@
     <string name="app_description">Sintesi vocale offline per Android e Layla. I modelli linguistici e le voci di riferimento restano su questo dispositivo.</string>
     <string name="language_pack">Pacchetto lingua</string>
     <string name="import_language_pack">Importa pacchetto lingua (.zip)</string>
+    <string name="import_pack_warning_title">Importare un pacchetto modello attendibile?</string>
+    <string name="import_pack_warning_message">I pacchetti ONNX vengono elaborati da codice nativo. Un pacchetto danneggiato o malevolo può arrestare il motore o compromettere i suoi dati privati. Continua solo se ritieni attendibile la fonte.</string>
+    <string name="continue_import">Scegli file</string>
+    <string name="error_pack_limits">Il pacchetto supera i limiti consentiti dell’archivio.</string>
     <string name="delete_language_pack">Elimina il pacchetto selezionato</string>
     <string name="delete_pack_title">Eliminare il pacchetto lingua?</string>
     <string name="delete_pack_message">Eliminare “%1$s” e tutte le relative voci da questo dispositivo?</string>

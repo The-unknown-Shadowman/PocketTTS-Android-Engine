@@ -31,6 +31,11 @@ voice.
 
 The Android application ID is `org.pockettts.android.engine`.
 
+Official APKs published by this repository from version 0.5.0 onward use the
+following release-certificate SHA-256 fingerprint:
+`5B:5C:DF:D1:5C:B0:4C:3D:77:7A:DD:21:E2:91:5F:55:AE:2B:7E:70:49:3D:8F:ED:07:9F:1A:C6:96:09:5B:78`.
+Locally built debug APKs intentionally have a different certificate.
+
 Recommended starting values from an Android ARM64 benchmark (108 syntheses,
 78 additionally checked with speech recognition):
 
@@ -41,6 +46,11 @@ Recommended starting values from an Android ARM64 benchmark (108 syntheses,
 
 These are defaults for newly imported release packs, not hard limits. Existing
 per-pack settings are preserved when the app is upgraded.
+
+The 24-layer packs are experimental. They require considerably more memory and
+can show variable latency on Android even when the same text and settings are
+used repeatedly. Test them on the target device before relying on them in an
+accessibility or interactive workflow.
 
 > **Upgrade note for pre-0.4.0 test builds:** version 0.4.0 changed the
 > application ID from `ai.layla.pockettts`. Android therefore installs it as a
@@ -59,6 +69,10 @@ per-pack settings are preserved when the app is upgraded.
 6. Open Android **Settings > Text-to-speech output > Preferred engine** and
    select **Pocket TTS Android Engine**.
 7. Restart the client application if it caches Android voices.
+
+Only import model packs from trusted sources. ONNX graphs are processed by a
+native inference runtime; archive validation and size limits reduce accidental
+damage but cannot make a malicious model safe.
 
 For Layla-specific details, see [docs/LAYLA.md](docs/LAYLA.md).
 
@@ -106,7 +120,7 @@ cd PocketTTS-Android-Engine
 
 The debug APK is written to `app/build/outputs/apk/debug/app-debug.apk`.
 See [docs/BUILDING.md](docs/BUILDING.md) for Android Studio, command-line, and
-device-testing instructions.
+device-testing and release-signing instructions.
 
 ## Build a model pack
 

@@ -28,6 +28,16 @@ app/src/main/third_party/onnxruntime/
 *.sha256
 release-assets/
 
+# Release-signing material and local environment files
+*.jks
+*.keystore
+*.p12
+*.pem
+.env
+*.env
+keystore.properties
+signing-secret*
+
 # Never commit voice recordings or other local audio
 *.wav
 *.wave
