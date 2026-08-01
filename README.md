@@ -29,8 +29,8 @@ voice.
 1. Install the APK from the repository's Releases page.
 2. Download or build a compatible model-pack ZIP.
 3. Open **Pocket TTS Android Engine** and import the model pack.
-4. Select the imported pack and import a WAV reference that you have permission
-   to use. A clear 5-15 second mono voice sample usually works well.
+4. Select the official bundled voice, or import a WAV reference that you have
+   permission to use. A clear 5-15 second mono sample usually works well.
 5. Save the selected voice and generation parameters.
 6. Open Android **Settings > Text-to-speech output > Preferred engine** and
    select **Pocket TTS Android Engine**.
@@ -74,8 +74,10 @@ huggingface-cli login
 ./scripts/export_model_pack.sh german de-DE "German (FP32)" fp32
 ```
 
-The resulting ZIP is written under `build/model-packs/`. It intentionally has
-no bundled reference voice; import an authorized WAV in the Android app.
+The resulting ZIP is written under `build/model-packs/`. Release packs may
+bundle the corresponding official Pocket TTS default voice under CC BY 4.0;
+see [VOICE_ATTRIBUTION.md](VOICE_ATTRIBUTION.md). Custom builds may omit voices
+or include only recordings the distributor is authorized to redistribute.
 
 Supported upstream configurations include `english`, `german`, `italian`,
 `spanish`, `portuguese`, and the larger `*_24l` variants exposed by the pinned
@@ -94,6 +96,7 @@ vendor/PocketTTS.cpp/        Patched C++ runtime and ONNX exporter
 vendor/pocket-tts/           Pinned upstream Python source snapshot
 docs/                        Build, model, and Layla integration guides
 MODEL_LICENSE.md             Model attribution and use conditions
+VOICE_ATTRIBUTION.md         Official bundled-voice sources and licenses
 THIRD_PARTY_NOTICES.md       Dependency provenance and licenses
 ```
 

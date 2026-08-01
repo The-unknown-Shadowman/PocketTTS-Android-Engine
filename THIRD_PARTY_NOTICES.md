@@ -8,6 +8,7 @@ by Kyutai, VolgaGerm, Microsoft, Google, mackron, Google Play, Android, or Layla
 | Component | Purpose | Upstream | License |
 | --- | --- | --- | --- |
 | Pocket TTS | Model architecture, Python export source, and model weights | [kyutai-labs/pocket-tts](https://github.com/kyutai-labs/pocket-tts) | Code: MIT; model weights: CC BY 4.0 plus the upstream access/use conditions |
+| Pocket TTS official voices | Default reference recordings bundled with release model packs | [kyutai/pocket-tts](https://huggingface.co/kyutai/pocket-tts) and [kyutai/tts-voices](https://huggingface.co/kyutai/tts-voices) | CC BY 4.0; per-voice sources and modifications are listed in `VOICE_ATTRIBUTION.md` |
 | PocketTTS.cpp | C++/ONNX inference runtime used as the native foundation | [VolgaGerm/PocketTTS.cpp](https://github.com/VolgaGerm/PocketTTS.cpp) | MIT |
 | ONNX Runtime Android 1.20.0 | ARM64 ONNX inference | [microsoft/onnxruntime](https://github.com/microsoft/onnxruntime) | MIT |
 | SentencePiece 0.2.1 | Text tokenization | [google/sentencepiece](https://github.com/google/sentencepiece) | Apache-2.0 |
@@ -28,6 +29,11 @@ compatibility changes. The original MIT license is kept at
 The Android build fetches SentencePiece at tag `v0.2.1` and dr_libs at commit
 `50bb723e6a459dbb781e26cefee4fd9ca6714d6a`.
 
+The release packs contain only Kyutai's official default voice catalog entries:
+Alba, Jürgen, Giovanni, Rafael, and Lola. They are converted to 24 kHz mono PCM
+WAV for Android packaging. See `VOICE_ATTRIBUTION.md`; user-imported recordings
+are never part of the repository or release artifacts.
+
 ## Related application
 
 This engine was developed for use with [Layla](https://www.layla-network.ai/).
@@ -38,4 +44,3 @@ Layla is not included in this repository and is not a dependency of the engine.
 
 The complete license texts and notices distributed by downloaded dependencies
 remain controlling for those components.
-

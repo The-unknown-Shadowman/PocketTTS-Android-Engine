@@ -6,6 +6,7 @@ with the following structure:
 ```text
 manifest.json
 MODEL_LICENSE.txt                  optional but recommended for redistribution
+VOICE_ATTRIBUTION.md               required when redistributing bundled voices
 models/
   mimi_encoder.onnx
   text_conditioner.onnx
@@ -58,10 +59,13 @@ Other examples:
 ./scripts/export_model_pack.sh german_24l de-DE "German 24-layer (FP32)" fp32
 ```
 
-The exporter downloads the official PyTorch weights, exports the graph through
-the patched `vendor/PocketTTS.cpp/export_onnx.py`, and packages the required
-files. The process needs several gigabytes of free disk space and may take a
-long time on CPU.
+The exporter downloads the official PyTorch weights and the corresponding
+official Pocket TTS default voice, exports the graph through the patched
+`vendor/PocketTTS.cpp/export_onnx.py`, and packages the required files with
+model and voice attribution. The process needs several gigabytes of free disk
+space and may take a long time on CPU. The five default mappings are Alba
+(English), Jürgen (German), Giovanni (Italian), Rafael (Portuguese), and Lola
+(Spanish).
 
 ## INT8
 
@@ -76,7 +80,7 @@ INT8 substantially reduces the three quantized model files. The encoder and
 text conditioner remain FP32. Quality and device performance vary, so compare
 the same prompts and voice sample before publishing an INT8 release.
 
-## Add a bundled voice while building
+## Add an authorized bundled voice while building
 
 The safest public pack contains no recording. Users can import a consented WAV
 through the Android app. If you have the right to redistribute a reference
@@ -88,11 +92,15 @@ python scripts/build_model_pack.py \
   --output build/model-packs/german-custom.zip \
   --id german-custom --name "German custom" --language de-DE \
   --precision fp32 \
+  --license-file MODEL_LICENSE.md \
+  --voice-attribution-file VOICE_ATTRIBUTION.md \
   --voice "speaker-a=Speaker A=/absolute/path/reference.wav"
 ```
 
 Every voice is converted to 24 kHz mono PCM WAV. A bundled recording may have a
 different license from the model and requires separate attribution and consent.
+Official release packs use only Kyutai's default catalog recordings documented
+in `VOICE_ATTRIBUTION.md`; they never use locally imported recordings.
 
 ## Remove recordings from an existing pack
 

@@ -41,18 +41,39 @@ if [ "$PRECISION" = "fp32" ]; then
 fi
 python "$ROOT/vendor/PocketTTS.cpp/export_onnx.py" "${EXPORT_ARGS[@]}"
 
-python "$ROOT/scripts/build_model_pack.py" \
+VOICE_ID=""
+VOICE_NAME=""
+TEMPERATURE=0.7
+case "$LANGUAGE" in
+  english|english_24l) VOICE_ID=alba; VOICE_NAME=Alba; TEMPERATURE=0.3 ;;
+  german|german_24l) VOICE_ID=juergen; VOICE_NAME=Jürgen ;;
+  italian|italian_24l) VOICE_ID=giovanni; VOICE_NAME=Giovanni ;;
+  portuguese|portuguese_24l) VOICE_ID=rafael; VOICE_NAME=Rafael ;;
+  spanish|spanish_24l) VOICE_ID=lola; VOICE_NAME=Lola ;;
+esac
+
+BUILD_ARGS=(
   --models-dir "$OUT" \
   --output "$PACK" \
   --id "$PACK_ID" \
   --name "$DISPLAY_NAME" \
   --language "$LANGUAGE_TAG" \
   --precision "$PRECISION" \
-  --temperature 0.7 \
+  --temperature "$TEMPERATURE" \
   --lsd-steps 1 \
   --threads 2 \
   --license-file "$ROOT/MODEL_LICENSE.md" \
   --source-url "https://huggingface.co/kyutai/pocket-tts"
+)
+
+if [ -n "$VOICE_ID" ]; then
+  VOICE_SOURCE=$(python -c "from pocket_tts.utils.utils import download_if_necessary, _ORIGINS_OF_PREDEFINED_VOICES; print(download_if_necessary(_ORIGINS_OF_PREDEFINED_VOICES['$VOICE_ID']))")
+  BUILD_ARGS+=(
+    --voice-attribution-file "$ROOT/VOICE_ATTRIBUTION.md"
+    --voice "$VOICE_ID=$VOICE_NAME=$VOICE_SOURCE"
+  )
+fi
+
+python "$ROOT/scripts/build_model_pack.py" "${BUILD_ARGS[@]}"
 
 echo "Model pack: $PACK"
-

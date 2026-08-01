@@ -33,6 +33,7 @@ deception, harassment, privacy invasion, misinformation, or other harmful or
 unauthorized activity.
 
 Voice recordings have their own copyright, privacy, publicity, and consent
-requirements. This project does not grant rights to any voice recording. Only
-import recordings that you created yourself or are authorized to use.
-
+requirements. Release packs may include the official Pocket TTS default voices
+under CC BY 4.0 with the attribution documented in
+[`VOICE_ATTRIBUTION.md`](VOICE_ATTRIBUTION.md). For any additional recording,
+only import audio that you created yourself or are authorized to use.

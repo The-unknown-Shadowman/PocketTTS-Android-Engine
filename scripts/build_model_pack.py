@@ -40,6 +40,7 @@ def arguments() -> argparse.Namespace:
     parser.add_argument("--lsd-steps", type=int, default=1)
     parser.add_argument("--threads", type=int, default=2)
     parser.add_argument("--license-file", type=Path)
+    parser.add_argument("--voice-attribution-file", type=Path)
     parser.add_argument("--source-url")
     parser.add_argument("--voice", action="append", type=parse_voice, default=[], metavar="ID=NAME=PATH")
     return parser.parse_args()
@@ -104,6 +105,11 @@ def main() -> None:
             if not license_path.is_file():
                 raise SystemExit(f"License file does not exist: {license_path}")
             shutil.copy2(license_path, root / "MODEL_LICENSE.txt")
+        if args.voice_attribution_file:
+            attribution_path = args.voice_attribution_file.expanduser().resolve()
+            if not attribution_path.is_file():
+                raise SystemExit(f"Voice attribution file does not exist: {attribution_path}")
+            shutil.copy2(attribution_path, root / "VOICE_ATTRIBUTION.md")
         with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6, allowZip64=True) as archive:
             for path in sorted(root.rglob("*")):
                 if path.is_file():
