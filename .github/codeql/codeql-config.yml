@@ -1,0 +1,9 @@
+name: Pocket TTS Android Engine CodeQL configuration
+
+# These Python files are pinned, unmodified upstream snapshots used only by
+# maintainers during model conversion. Their upstream projects own their
+# security fixes. The Android runtime and this project's build scripts remain
+# in scope, including the patched PocketTTS.cpp C++ implementation.
+paths-ignore:
+  - vendor/pocket-tts/**
+  - vendor/PocketTTS.cpp/**/*.py
