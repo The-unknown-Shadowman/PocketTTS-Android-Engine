@@ -85,8 +85,3 @@ export POCKETTTS_KEY_PASSWORD='key password'
 Back up the keystore and its recovery secret securely. Every future update for
 the same Android application ID must be signed with this exact key. Never add a
 keystore, password file, or signing environment script to Git.
-
-The pre-0.5.0 review APKs used Android's generic debug certificate. Android
-cannot install a production-signed 0.5.0 APK over those builds. Preserve any
-needed model packs and custom reference voices, uninstall the review build,
-then install the signed release and import the data again.
