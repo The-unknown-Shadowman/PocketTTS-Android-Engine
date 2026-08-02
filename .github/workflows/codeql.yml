@@ -69,6 +69,7 @@ jobs:
           # GitHub Code Security. Keep analysis enforceable while private, then
           # automatically enable normal Security-tab uploads when made public.
           upload: ${{ github.event.repository.private && 'never' || 'always' }}
+          upload-database: ${{ github.event.repository.private && 'false' || 'true' }}
 
       - if: github.event.repository.private
         name: Require clean private CodeQL results
