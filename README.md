@@ -161,6 +161,13 @@ explicit and lawful consent, and do not use synthesized speech to deceive or
 harm people. Review [MODEL_LICENSE.md](MODEL_LICENSE.md) before distributing
 converted weights.
 
+## Acknowledgements
+
+Development of this project was assisted by OpenAI Codex. The project owner
+reviewed the implementation, performed on-device testing, and is responsible
+for the published releases. This project is not affiliated with or endorsed by
+OpenAI.
+
 ## Licensing
 
 Original code in this repository is released under the [MIT License](LICENSE).
