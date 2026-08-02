@@ -12,6 +12,8 @@
     <string name="import_pack_warning_message">I pacchetti ONNX vengono elaborati da codice nativo. Un pacchetto danneggiato o malevolo può arrestare il motore o compromettere i suoi dati privati. Continua solo se ritieni attendibile la fonte.</string>
     <string name="continue_import">Scegli file</string>
     <string name="error_pack_limits">Il pacchetto supera i limiti consentiti dell’archivio.</string>
+    <string name="error_untrusted_document">Android non ha concesso un accesso sicuro in lettura al documento selezionato.</string>
+    <string name="error_voice_too_large">Il file WAV selezionato supera il limite di 64 MiB.</string>
     <string name="delete_language_pack">Elimina il pacchetto selezionato</string>
     <string name="delete_pack_title">Eliminare il pacchetto lingua?</string>
     <string name="delete_pack_message">Eliminare “%1$s” e tutte le relative voci da questo dispositivo?</string>

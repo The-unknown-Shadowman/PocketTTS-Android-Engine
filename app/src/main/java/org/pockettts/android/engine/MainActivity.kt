@@ -284,6 +284,7 @@ class MainActivity : Activity() {
     private fun openDocument(requestCode: Int, mime: String) {
         startActivityForResult(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             type = if (requestCode == REQUEST_MODEL_PACK) "*/*" else mime
             if (requestCode == REQUEST_MODEL_PACK) putExtra(
                 Intent.EXTRA_MIME_TYPES,
@@ -317,6 +318,10 @@ class MainActivity : Activity() {
         super.onActivityResult(requestCode, resultCode, data)
         val uri = data?.data ?: return
         if (resultCode != RESULT_OK) return
+        if (data.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION == 0) {
+            statusView.text = getString(R.string.error_untrusted_document)
+            return
+        }
         statusView.text = if (requestCode == REQUEST_MODEL_PACK) {
             getString(R.string.status_importing_pack)
         } else getString(R.string.status_importing_voice)

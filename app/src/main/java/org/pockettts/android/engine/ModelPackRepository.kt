@@ -1,8 +1,12 @@
 package org.pockettts.android.engine
 
+import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.LocaleList
+import android.os.Process
 import android.provider.OpenableColumns
 import org.json.JSONArray
 import org.json.JSONObject
@@ -10,6 +14,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.RandomAccessFile
+import java.nio.file.FileSystems
 import java.util.Locale
 import java.util.UUID
 import java.util.zip.ZipInputStream
@@ -140,9 +145,10 @@ internal object ModelPackRepository {
     }
 
     fun importPack(context: Context, uri: Uri): ModelPack {
-        val staging = File(packsRoot(context), ".import-${UUID.randomUUID()}").apply { mkdirs() }
+        val staging = File(packsRoot(context), ".import-${UUID.randomUUID()}").apply { mkdirs() }.canonicalFile
         try {
-            context.contentResolver.openInputStream(uri).use { input ->
+            val safeUri = validateSelectedDocumentUri(context, uri)
+            context.contentResolver.openInputStream(safeUri).use { input ->
                 requireNotNull(input) { context.getString(R.string.error_open_pack) }
                 ZipInputStream(input.buffered()).use { zip ->
                     var entryCount = 0
@@ -153,8 +159,8 @@ internal object ModelPackRepository {
                         require(entryCount <= MAX_ARCHIVE_ENTRIES) {
                             context.getString(R.string.error_pack_limits)
                         }
-                        val target = File(staging, entry.name)
-                        require(target.canonicalPath.startsWith(staging.canonicalPath + File.separator)) {
+                        val target = File(staging, entry.name).canonicalFile
+                        require(target.path.startsWith(staging.path + File.separator)) {
                             context.getString(R.string.error_invalid_pack_path)
                         }
                         if (entry.isDirectory) target.mkdirs() else {
@@ -190,18 +196,19 @@ internal object ModelPackRepository {
     }
 
     fun importVoice(context: Context, pack: ModelPack, uri: Uri): ModelPack {
-        val displayName = queryDisplayName(context, uri).substringBeforeLast('.').ifBlank { context.getString(R.string.new_voice) }
+        val safeUri = validateSelectedDocumentUri(context, uri)
+        val displayName = queryDisplayName(context, safeUri).substringBeforeLast('.').ifBlank { context.getString(R.string.new_voice) }
         val idBase = displayName.lowercase(Locale.ROOT).replace(Regex("[^a-z0-9]+"), "-").trim('-').ifBlank { "voice" }
         var id = idBase
         var suffix = 2
         while (pack.voices.any { it.id == id }) id = "$idBase-${suffix++}"
         val targetName = "$id.wav"
         val target = File(pack.voicesDir.apply { mkdirs() }, targetName)
-        context.contentResolver.openInputStream(uri).use { input ->
-            requireNotNull(input) { context.getString(R.string.error_open_wav) }
-            FileOutputStream(target).use { input.copyTo(it) }
-        }
         try {
+            context.contentResolver.openInputStream(safeUri).use { input ->
+                requireNotNull(input) { context.getString(R.string.error_open_wav) }
+                copyVoiceLimited(input, target, context.getString(R.string.error_voice_too_large))
+            }
             require(isWaveFile(target)) { context.getString(R.string.error_invalid_wav) }
         } catch (error: Throwable) {
             target.delete()
@@ -395,6 +402,46 @@ internal object ModelPackRepository {
         return entryBytes
     }
 
+    private fun copyVoiceLimited(input: InputStream, target: File, limitError: String) {
+        val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+        var copiedBytes = 0L
+        FileOutputStream(target).use { output ->
+            while (true) {
+                val read = input.read(buffer)
+                if (read < 0) break
+                copiedBytes += read
+                require(copiedBytes <= MAX_VOICE_BYTES) { limitError }
+                output.write(buffer, 0, read)
+            }
+        }
+    }
+
+    private fun validateSelectedDocumentUri(context: Context, uri: Uri): Uri {
+        require(uri.scheme == ContentResolver.SCHEME_CONTENT) {
+            context.getString(R.string.error_untrusted_document)
+        }
+        val authority = uri.authority
+        require(!authority.isNullOrBlank() && context.packageManager.resolveContentProvider(authority, 0) != null) {
+            context.getString(R.string.error_untrusted_document)
+        }
+        require(
+            context.checkUriPermission(
+                uri,
+                Process.myPid(),
+                Process.myUid(),
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) { context.getString(R.string.error_untrusted_document) }
+        val normalizedPath = FileSystems.getDefault().getPath(uri.path.orEmpty()).normalize()
+        require(
+            !normalizedPath.startsWith("/data") &&
+                !normalizedPath.startsWith("/proc") &&
+                !normalizedPath.startsWith("/sys") &&
+                !normalizedPath.startsWith("/dev")
+        ) { context.getString(R.string.error_untrusted_document) }
+        return uri
+    }
+
     private fun sanitizeId(raw: String): String {
         val id = raw.lowercase(Locale.ROOT).replace(Regex("[^a-z0-9._-]+"), "-").trim('-')
         require(id.isNotBlank() && id == raw) { "Ungültige Paket-ID" }
@@ -415,4 +462,5 @@ internal object ModelPackRepository {
     private const val MAX_ARCHIVE_ENTRIES = 64
     private const val MAX_ARCHIVE_ENTRY_BYTES = 2L * 1024 * 1024 * 1024
     private const val MAX_ARCHIVE_BYTES = 3L * 1024 * 1024 * 1024
+    private const val MAX_VOICE_BYTES = 64L * 1024 * 1024
 }

@@ -14,6 +14,8 @@
     <string name="import_pack_warning_message">ONNX model packs are processed by native code. A malformed or malicious pack can crash the engine or compromise its private app data. Continue only if you trust the source.</string>
     <string name="continue_import">Choose file</string>
     <string name="error_pack_limits">The model pack exceeds the permitted archive limits.</string>
+    <string name="error_untrusted_document">Android did not grant safe read access to the selected document.</string>
+    <string name="error_voice_too_large">The selected WAV file exceeds the 64 MiB limit.</string>
     <string name="delete_language_pack">Delete selected language pack</string>
     <string name="delete_pack_title">Delete language pack?</string>
     <string name="delete_pack_message">Delete “%1$s” and all of its voices from this device?</string>
