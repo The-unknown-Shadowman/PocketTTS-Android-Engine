@@ -26,4 +26,4 @@ jobs:
       - name: Check repository contents
         run: ./scripts/check_publishable.sh
       - name: Build and lint
-        run: ./gradlew --no-daemon :app:assembleDebug :app:lintDebug
+        run: ./gradlew --no-daemon :app:testDebugUnitTest :app:assembleDebug :app:lintDebug

@@ -14,7 +14,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.RandomAccessFile
-import java.nio.file.FileSystems
 import java.util.Locale
 import java.util.UUID
 import java.util.zip.ZipInputStream
@@ -146,10 +145,9 @@ internal object ModelPackRepository {
 
     fun importPack(context: Context, uri: Uri): ModelPack {
         val staging = File(packsRoot(context), ".import-${UUID.randomUUID()}").apply { mkdirs() }.canonicalFile
+        val stagingPath = staging.toPath().toAbsolutePath().normalize()
         try {
-            val safeUri = validateSelectedDocumentUri(context, uri)
-            context.contentResolver.openInputStream(safeUri).use { input ->
-                requireNotNull(input) { context.getString(R.string.error_open_pack) }
+            openSelectedDocument(context, uri, R.string.error_open_pack).use { input ->
                 ZipInputStream(input.buffered()).use { zip ->
                     var entryCount = 0
                     var extractedBytes = 0L
@@ -159,10 +157,15 @@ internal object ModelPackRepository {
                         require(entryCount <= MAX_ARCHIVE_ENTRIES) {
                             context.getString(R.string.error_pack_limits)
                         }
-                        val target = File(staging, entry.name).canonicalFile
-                        require(target.path.startsWith(staging.path + File.separator)) {
+                        val targetPath = ImportSecurity.resolveArchiveTarget(
+                            stagingPath,
+                            entry.name,
+                            context.getString(R.string.error_invalid_pack_path)
+                        )
+                        require(targetPath != stagingPath && targetPath.startsWith(stagingPath)) {
                             context.getString(R.string.error_invalid_pack_path)
                         }
+                        val target = targetPath.toFile()
                         if (entry.isDirectory) target.mkdirs() else {
                             target.parentFile?.mkdirs()
                             extractedBytes += copyLimited(
@@ -196,28 +199,28 @@ internal object ModelPackRepository {
     }
 
     fun importVoice(context: Context, pack: ModelPack, uri: Uri): ModelPack {
-        val safeUri = validateSelectedDocumentUri(context, uri)
-        val displayName = queryDisplayName(context, safeUri).substringBeforeLast('.').ifBlank { context.getString(R.string.new_voice) }
-        val idBase = displayName.lowercase(Locale.ROOT).replace(Regex("[^a-z0-9]+"), "-").trim('-').ifBlank { "voice" }
-        var id = idBase
-        var suffix = 2
-        while (pack.voices.any { it.id == id }) id = "$idBase-${suffix++}"
-        val targetName = "$id.wav"
-        val target = File(pack.voicesDir.apply { mkdirs() }, targetName)
-        try {
-            context.contentResolver.openInputStream(safeUri).use { input ->
-                requireNotNull(input) { context.getString(R.string.error_open_wav) }
+        return openSelectedDocument(context, uri, R.string.error_open_wav).use { input ->
+            val displayName = queryDisplayName(context, uri).substringBeforeLast('.')
+                .ifBlank { context.getString(R.string.new_voice) }
+            val idBase = displayName.lowercase(Locale.ROOT).replace(Regex("[^a-z0-9]+"), "-").trim('-')
+                .ifBlank { "voice" }
+            var id = idBase
+            var suffix = 2
+            while (pack.voices.any { it.id == id }) id = "$idBase-${suffix++}"
+            val targetName = "$id.wav"
+            val target = File(pack.voicesDir.apply { mkdirs() }, targetName)
+            try {
                 copyVoiceLimited(input, target, context.getString(R.string.error_voice_too_large))
+                require(isWaveFile(target)) { context.getString(R.string.error_invalid_wav) }
+            } catch (error: Throwable) {
+                target.delete()
+                throw error
             }
-            require(isWaveFile(target)) { context.getString(R.string.error_invalid_wav) }
-        } catch (error: Throwable) {
-            target.delete()
-            throw error
+            val updated = pack.copy(voices = pack.voices + PackVoice(id, displayName, targetName))
+            writeManifest(updated)
+            selectVoice(context, pack.id, id)
+            updated
         }
-        val updated = pack.copy(voices = pack.voices + PackVoice(id, displayName, targetName))
-        writeManifest(updated)
-        selectVoice(context, pack.id, id)
-        return updated
     }
 
     fun deletePack(context: Context, pack: ModelPack) {
@@ -416,7 +419,7 @@ internal object ModelPackRepository {
         }
     }
 
-    private fun validateSelectedDocumentUri(context: Context, uri: Uri): Uri {
+    private fun openSelectedDocument(context: Context, uri: Uri, openErrorResource: Int): InputStream {
         require(uri.scheme == ContentResolver.SCHEME_CONTENT) {
             context.getString(R.string.error_untrusted_document)
         }
@@ -432,14 +435,16 @@ internal object ModelPackRepository {
                 Intent.FLAG_GRANT_READ_URI_PERMISSION
             ) == PackageManager.PERMISSION_GRANTED
         ) { context.getString(R.string.error_untrusted_document) }
-        val normalizedPath = FileSystems.getDefault().getPath(uri.path.orEmpty()).normalize()
+        val normalizedPath = ImportSecurity.normalizeDocumentPath(uri.path.orEmpty())
         require(
             !normalizedPath.startsWith("/data") &&
                 !normalizedPath.startsWith("/proc") &&
                 !normalizedPath.startsWith("/sys") &&
                 !normalizedPath.startsWith("/dev")
         ) { context.getString(R.string.error_untrusted_document) }
-        return uri
+        return requireNotNull(context.contentResolver.openInputStream(uri)) {
+            context.getString(openErrorResource)
+        }
     }
 
     private fun sanitizeId(raw: String): String {

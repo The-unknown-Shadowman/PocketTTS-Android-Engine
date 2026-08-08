@@ -67,4 +67,29 @@ jobs:
         run: ./gradlew --no-daemon :app:compileDebugKotlin
 
       - name: Perform CodeQL analysis
+        id: codeql-analyze
         uses: github/codeql-action/analyze@bce182f857edf1feab116e9795a3393d21977282 # v4
+
+      - name: Require clean CodeQL results
+        shell: python
+        env:
+          CODEQL_SARIF_DIR: ${{ steps.codeql-analyze.outputs.sarif-output }}
+        run: |
+          import glob
+          import json
+          import os
+          import sys
+
+          findings = []
+          for path in glob.glob(os.path.join(os.environ["CODEQL_SARIF_DIR"], "*.sarif")):
+              with open(path, encoding="utf-8") as stream:
+                  document = json.load(stream)
+              for run in document.get("runs", []):
+                  for result in run.get("results", []):
+                      findings.append((result.get("ruleId", "unknown"), path))
+
+          if findings:
+              for rule, path in findings:
+                  print(f"CodeQL finding: {rule} ({os.path.basename(path)})")
+              sys.exit(f"CodeQL reported {len(findings)} finding(s).")
+          print("CodeQL reported no findings.")
