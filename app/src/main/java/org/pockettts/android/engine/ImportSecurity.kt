@@ -4,14 +4,19 @@ import java.nio.file.FileSystems
 import java.nio.file.Path
 
 internal object ImportSecurity {
-    fun resolveArchiveTarget(root: Path, entryName: String, errorMessage: String): Path {
-        val normalizedRoot = root.toAbsolutePath().normalize()
-        val target = normalizedRoot.resolve(entryName).normalize()
-        require(target != normalizedRoot && target.startsWith(normalizedRoot)) { errorMessage }
-        return target
-    }
+    fun isSafeArchiveEntryName(entryName: String): Boolean = runCatching {
+        val entryPath = FileSystems.getDefault().getPath(entryName)
+        val normalized = entryPath.normalize()
+        entryName.isNotBlank() &&
+            normalized.toString().isNotBlank() &&
+            !entryPath.isAbsolute &&
+            !normalized.startsWith("..")
+    }.getOrDefault(false)
 
-    fun normalizeDocumentPath(rawPath: String): Path =
-        FileSystems.getDefault().getPath(rawPath).normalize()
+    fun isBlockedDocumentPath(path: Path): Boolean =
+        path.startsWith("/data") ||
+            path.startsWith("/proc") ||
+            path.startsWith("/sys") ||
+            path.startsWith("/dev")
 
 }

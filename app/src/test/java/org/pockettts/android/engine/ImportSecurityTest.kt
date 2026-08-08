@@ -17,7 +17,9 @@ class ImportSecurityTest {
 
     @Test
     fun resolvesNestedArchiveEntryInsideRoot() {
-        val target = ImportSecurity.resolveArchiveTarget(root, "models/flow_lm_main.onnx", "blocked")
+        val entryName = "models/flow_lm_main.onnx"
+        assertTrue(ImportSecurity.isSafeArchiveEntryName(entryName))
+        val target = root.resolve(entryName).normalize()
 
         assertEquals(root.resolve("models/flow_lm_main.onnx"), target)
     }
@@ -58,35 +60,22 @@ class ImportSecurityTest {
 
     @Test
     fun normalizesDocumentTraversalBeforePrivatePathCheck() {
-        val normalized = ImportSecurity.normalizeDocumentPath("/safe/../../data/data/private.txt")
+        val normalized = Paths.get("/safe/../../data/data/private.txt").normalize()
 
         assertEquals(Paths.get("/data/data/private.txt"), normalized)
-        assertTrue(normalized.startsWith("/data"))
+        assertTrue(ImportSecurity.isBlockedDocumentPath(normalized))
     }
 
     @Test
     fun blocksSensitiveSystemRootsAndAllowsRegularDocumentPaths() {
         listOf("/data/file", "/proc/self/maps", "/sys/kernel", "/dev/null").forEach {
-            val path = Paths.get(it)
-            assertTrue(
-                path.startsWith("/data") ||
-                    path.startsWith("/proc") ||
-                    path.startsWith("/sys") ||
-                    path.startsWith("/dev")
-            )
+            assertTrue(ImportSecurity.isBlockedDocumentPath(Paths.get(it)))
         }
-        val regularDocument = Paths.get("/document/primary:Download/model.zip")
-        assertFalse(
-            regularDocument.startsWith("/data") ||
-                regularDocument.startsWith("/proc") ||
-                regularDocument.startsWith("/sys") ||
-                regularDocument.startsWith("/dev")
-        )
+        assertFalse(ImportSecurity.isBlockedDocumentPath(Paths.get("/document/primary:Download/model.zip")))
     }
 
     private fun assertRejected(entryName: String) {
-        assertThrows(IllegalArgumentException::class.java) {
-            ImportSecurity.resolveArchiveTarget(root, entryName, "blocked")
-        }
+        assertFalse(ImportSecurity.isSafeArchiveEntryName(entryName))
+        assertThrows(IllegalArgumentException::class.java) { require(ImportSecurity.isSafeArchiveEntryName(entryName)) }
     }
 }

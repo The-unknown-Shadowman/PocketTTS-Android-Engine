@@ -14,6 +14,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.RandomAccessFile
+import java.nio.file.FileSystems
 import java.util.Locale
 import java.util.UUID
 import java.util.zip.ZipInputStream
@@ -157,11 +158,11 @@ internal object ModelPackRepository {
                         require(entryCount <= MAX_ARCHIVE_ENTRIES) {
                             context.getString(R.string.error_pack_limits)
                         }
-                        val targetPath = ImportSecurity.resolveArchiveTarget(
-                            stagingPath,
-                            entry.name,
+                        val entryName = entry.name
+                        require(ImportSecurity.isSafeArchiveEntryName(entryName)) {
                             context.getString(R.string.error_invalid_pack_path)
-                        )
+                        }
+                        val targetPath = stagingPath.resolve(entryName).normalize()
                         require(targetPath != stagingPath && targetPath.startsWith(stagingPath)) {
                             context.getString(R.string.error_invalid_pack_path)
                         }
@@ -435,9 +436,10 @@ internal object ModelPackRepository {
                 Intent.FLAG_GRANT_READ_URI_PERMISSION
             ) == PackageManager.PERMISSION_GRANTED
         ) { context.getString(R.string.error_untrusted_document) }
-        val normalizedPath = ImportSecurity.normalizeDocumentPath(uri.path.orEmpty())
+        val normalizedPath = FileSystems.getDefault().getPath(uri.path.orEmpty()).normalize()
         require(
-            !normalizedPath.startsWith("/data") &&
+            !ImportSecurity.isBlockedDocumentPath(normalizedPath) &&
+                !normalizedPath.startsWith("/data") &&
                 !normalizedPath.startsWith("/proc") &&
                 !normalizedPath.startsWith("/sys") &&
                 !normalizedPath.startsWith("/dev")
