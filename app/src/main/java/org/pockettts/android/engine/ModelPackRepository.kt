@@ -158,14 +158,13 @@ internal object ModelPackRepository {
                         require(entryCount <= MAX_ARCHIVE_ENTRIES) {
                             context.getString(R.string.error_pack_limits)
                         }
-                        val entryName = entry.name
-                        require(ImportSecurity.isSafeArchiveEntryName(entryName)) {
-                            context.getString(R.string.error_invalid_pack_path)
+                        val targetPath = stagingPath.resolve(entry.name).normalize()
+                        if (targetPath == stagingPath || !targetPath.startsWith(stagingPath)) {
+                            throw IllegalArgumentException(
+                                context.getString(R.string.error_invalid_pack_path)
+                            )
                         }
-                        val targetPath = stagingPath.resolve(entryName).normalize()
-                        require(targetPath != stagingPath && targetPath.startsWith(stagingPath)) {
-                            context.getString(R.string.error_invalid_pack_path)
-                        }
+                        check(ImportSecurity.isArchiveTargetInsideRoot(stagingPath, targetPath))
                         val target = targetPath.toFile()
                         if (entry.isDirectory) target.mkdirs() else {
                             target.parentFile?.mkdirs()
@@ -421,29 +420,36 @@ internal object ModelPackRepository {
     }
 
     private fun openSelectedDocument(context: Context, uri: Uri, openErrorResource: Int): InputStream {
-        require(uri.scheme == ContentResolver.SCHEME_CONTENT) {
-            context.getString(R.string.error_untrusted_document)
+        if (uri.scheme != ContentResolver.SCHEME_CONTENT) {
+            throw SecurityException(context.getString(R.string.error_untrusted_document))
         }
         val authority = uri.authority
-        require(!authority.isNullOrBlank() && context.packageManager.resolveContentProvider(authority, 0) != null) {
-            context.getString(R.string.error_untrusted_document)
+        if (authority.isNullOrBlank() || context.packageManager.resolveContentProvider(authority, 0) == null) {
+            throw SecurityException(context.getString(R.string.error_untrusted_document))
         }
-        require(
+        if (
             context.checkUriPermission(
                 uri,
                 Process.myPid(),
                 Process.myUid(),
                 Intent.FLAG_GRANT_READ_URI_PERMISSION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) { context.getString(R.string.error_untrusted_document) }
-        val normalizedPath = FileSystems.getDefault().getPath(uri.path.orEmpty()).normalize()
-        require(
-            !ImportSecurity.isBlockedDocumentPath(normalizedPath) &&
-                !normalizedPath.startsWith("/data") &&
-                !normalizedPath.startsWith("/proc") &&
-                !normalizedPath.startsWith("/sys") &&
-                !normalizedPath.startsWith("/dev")
-        ) { context.getString(R.string.error_untrusted_document) }
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            throw SecurityException(context.getString(R.string.error_untrusted_document))
+        }
+        val rawPath = uri.path ?: throw SecurityException(
+            context.getString(R.string.error_untrusted_document)
+        )
+        val normalizedPath = FileSystems.getDefault().getPath(rawPath).normalize()
+        if (
+            normalizedPath.startsWith("/data") ||
+                normalizedPath.startsWith("/proc") ||
+                normalizedPath.startsWith("/sys") ||
+                normalizedPath.startsWith("/dev")
+        ) {
+            throw SecurityException(context.getString(R.string.error_untrusted_document))
+        }
+        check(!ImportSecurity.isBlockedDocumentPath(normalizedPath))
         return requireNotNull(context.contentResolver.openInputStream(uri)) {
             context.getString(openErrorResource)
         }

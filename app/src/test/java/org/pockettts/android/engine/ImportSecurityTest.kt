@@ -8,7 +8,6 @@ import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -18,10 +17,10 @@ class ImportSecurityTest {
     @Test
     fun resolvesNestedArchiveEntryInsideRoot() {
         val entryName = "models/flow_lm_main.onnx"
-        assertTrue(ImportSecurity.isSafeArchiveEntryName(entryName))
         val target = root.resolve(entryName).normalize()
 
         assertEquals(root.resolve("models/flow_lm_main.onnx"), target)
+        assertTrue(ImportSecurity.isArchiveTargetInsideRoot(root, target))
     }
 
     @Test
@@ -75,7 +74,7 @@ class ImportSecurityTest {
     }
 
     private fun assertRejected(entryName: String) {
-        assertFalse(ImportSecurity.isSafeArchiveEntryName(entryName))
-        assertThrows(IllegalArgumentException::class.java) { require(ImportSecurity.isSafeArchiveEntryName(entryName)) }
+        val target = root.resolve(entryName).normalize()
+        assertFalse(ImportSecurity.isArchiveTargetInsideRoot(root, target))
     }
 }
