@@ -50,3 +50,6 @@ signing-secret*
 .DS_Store
 Thumbs.db
 *.swp
+
+# Kotlin Gradle plugin local state
+.kotlin/

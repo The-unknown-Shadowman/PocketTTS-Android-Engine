@@ -7,6 +7,7 @@ cd "$ROOT"
 if find . \
   -path ./.git -prune -o \
   -path ./.gradle -prune -o \
+  -path ./.kotlin -prune -o \
   -path ./app/build -prune -o \
   -path ./app/.cxx -prune -o \
   -path ./app/src/main/jniLibs -prune -o \
@@ -28,7 +29,7 @@ if [ -f local.properties ]; then
   exit 1
 fi
 
-if grep -RIl --exclude-dir=.git --exclude-dir=.gradle --exclude-dir=build \
+if grep -RIl --exclude=.git --exclude-dir=.git --exclude-dir=.gradle --exclude-dir=.kotlin --exclude-dir=build \
   --exclude-dir=.cxx --exclude-dir=jniLibs --exclude-dir=third_party \
   --exclude-dir=release-assets --exclude='check_publishable.sh' \
   -E '(/mnt/[a-z]/|/home/[^/]+/|[A-Za-z]:[/\\]Users[/\\][^/\\]+|sdk\.dir=|ndk\.dir=)' . | grep -q .; then
@@ -36,7 +37,7 @@ if grep -RIl --exclude-dir=.git --exclude-dir=.gradle --exclude-dir=build \
   exit 1
 fi
 
-if grep -RIl --exclude-dir=.git --exclude-dir=.gradle --exclude-dir=build \
+if grep -RIl --exclude=.git --exclude-dir=.git --exclude-dir=.gradle --exclude-dir=.kotlin --exclude-dir=build \
   --exclude-dir=.cxx --exclude-dir=jniLibs --exclude-dir=third_party \
   --exclude-dir=release-assets --exclude='check_publishable.sh' \
   -E '(BEGIN (RSA|OPENSSH|EC|DSA) PRIVATE KEY|gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AIza[A-Za-z0-9_-]{30,}|sk-[A-Za-z0-9_-]{20,})' . | grep -q .; then
