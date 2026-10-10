@@ -4,7 +4,7 @@
 
 - 64-bit Windows, Linux, or macOS development host
 - JDK 17
-- Android SDK Platform 35 and Build Tools 35
+- Android SDK Platform 37.0 and Build Tools 36.0.0
 - Android NDK `27.2.12479018`
 - CMake 3.22.1 and Ninja
 - Git, curl, unzip, and tar

@@ -1,6 +1,5 @@
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
 }
 
 val releaseKeystorePath = providers.environmentVariable("POCKETTTS_KEYSTORE_PATH").orNull
@@ -17,7 +16,7 @@ val hasReleaseSigning = listOf(
 
 android {
     namespace = "org.pockettts.android.engine"
-    compileSdk = 35
+    compileSdk = 37
     // A CI/WSL build may provide a complete NDK outside the Android SDK.
     // Android Studio falls back to the version managed by the SDK.
     ndkVersion = requiredNdkVersion
@@ -48,7 +47,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions { jvmTarget = "17" }
 
     signingConfigs {
         if (hasReleaseSigning) {
@@ -70,7 +68,7 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.15.0")
+    implementation("androidx.core:core-ktx:1.19.1")
     implementation("androidx.appcompat:appcompat:1.8.0")
     testImplementation("junit:junit:4.13.2")
 }
