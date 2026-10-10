@@ -63,4 +63,7 @@
     <string name="error_delete_pack">The selected language pack could not be deleted</string>
     <string name="error_open_wav">The WAV file could not be opened</string>
     <string name="error_invalid_wav">Select a valid WAV file</string>
+    <string name="download_language_packs">Download language packs</string>
+    <string name="language_pack_help">Language packs are provided separately from the app. Download a model ZIP from the release assets below, then import it here. You do not need to build your own pack.</string>
+    <string name="error_open_downloads">Could not open the downloads. Visit the project Releases page in your browser.</string>
 </resources>

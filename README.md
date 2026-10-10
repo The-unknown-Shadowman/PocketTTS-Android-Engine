@@ -54,8 +54,13 @@ accessibility or interactive workflow.
 
 ## Install and use
 
-1. Install the APK from the repository's Releases page.
-2. Download or build a compatible model-pack ZIP.
+The APK does **not** include model weights. Ready-to-use language packs are
+provided as separate ZIP downloads in the same release; you do **not** need to
+export or build a model yourself.
+
+1. Install the APK from the [latest release](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/latest).
+2. In the app, tap **Download language packs**, expand **Assets** on the release
+   page, and download a model ZIP (not the source-code ZIP).
 3. Open **Pocket TTS Android Engine** and import the model pack.
 4. Select the official bundled voice, or import a WAV reference that you have
    permission to use. A clear 5-15 second mono sample usually works well.
@@ -63,6 +68,23 @@ accessibility or interactive workflow.
 6. Open Android **Settings > Text-to-speech output > Preferred engine** and
    select **Pocket TTS Android Engine**.
 7. Restart the client application if it caches Android voices.
+
+Ready-to-use packs in release v0.5.2:
+
+| Language | Release asset |
+| --- | --- |
+| English | `PocketTTS-english-FP32.zip` |
+| German | `PocketTTS-german-FP32.zip` |
+| Italian | `PocketTTS-italian-FP32.zip` |
+| Portuguese | `PocketTTS-portuguese-FP32.zip` |
+| Spanish | `PocketTTS-spanish-FP32.zip` |
+
+German experimental variants are also available as
+`PocketTTS-german-24L-FP32.zip` and `PocketTTS-german-24L-INT8.zip`.
+Start with the regular FP32 pack; see the memory and latency notes above for 24L.
+For older app versions without the download button, open the
+[release downloads](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/latest)
+in a browser, download a model ZIP, and import it in the app.
 
 Only import model packs from trusted sources. ONNX graphs are processed by a
 native inference runtime; archive validation and size limits reduce accidental

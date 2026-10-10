@@ -61,4 +61,7 @@
     <string name="error_delete_pack">Das ausgewählte Sprachpaket konnte nicht gelöscht werden</string>
     <string name="error_open_wav">WAV-Datei konnte nicht geöffnet werden</string>
     <string name="error_invalid_wav">Bitte eine gültige WAV-Datei auswählen</string>
+    <string name="download_language_packs">Sprachpakete herunterladen</string>
+    <string name="language_pack_help">Sprachpakete werden getrennt von der App bereitgestellt. Lade eine Modell-ZIP aus den Release-Dateien herunter und importiere sie hier. Du musst kein eigenes Paket erstellen.</string>
+    <string name="error_open_downloads">Die Downloads konnten nicht geöffnet werden. Öffne die Releases des Projekts im Browser.</string>
 </resources>
