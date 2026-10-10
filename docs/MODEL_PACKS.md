@@ -23,6 +23,15 @@ voices/
   optional-reference.wav
 ```
 
+## Download ready-to-use packs
+
+Open the [latest release](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/latest)
+and expand **Assets**. Download `PocketTTS-<language>-FP32.zip` for English,
+German, Italian, Portuguese, or Spanish, then use **Import language pack (.zip)**
+in the app. The APK and model ZIP are separate downloads. The source-code ZIP
+is not a model pack. Model export below is optional for contributors and custom
+packs.
+
 ## Manifest format
 
 ```json

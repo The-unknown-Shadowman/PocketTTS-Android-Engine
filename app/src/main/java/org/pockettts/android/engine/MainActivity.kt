@@ -108,6 +108,21 @@ class MainActivity : Activity() {
         })
 
         content.addLabel(getString(R.string.language_pack))
+        content.addView(TextView(this).apply {
+            text = getString(R.string.language_pack_help)
+            textSize = 14f
+            setPadding(0, dp(8), 0, dp(8))
+        }, matchWidth())
+        content.addView(Button(this).apply {
+            text = getString(R.string.download_language_packs)
+            setOnClickListener {
+                runCatching {
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("$REPOSITORY_URL/releases/latest")))
+                }.onFailure {
+                    Toast.makeText(this@MainActivity, R.string.error_open_downloads, Toast.LENGTH_LONG).show()
+                }
+            }
+        }, matchWidth())
         packSpinner = Spinner(this)
         content.addView(packSpinner, matchWidth())
         content.addView(Button(this).apply {

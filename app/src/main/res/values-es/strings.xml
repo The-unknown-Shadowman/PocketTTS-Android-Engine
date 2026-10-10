@@ -61,4 +61,7 @@
     <string name="error_delete_pack">No se pudo eliminar el paquete de idioma seleccionado</string>
     <string name="error_open_wav">No se pudo abrir el archivo WAV</string>
     <string name="error_invalid_wav">Selecciona un archivo WAV válido</string>
+    <string name="download_language_packs">Descargar paquetes de idioma</string>
+    <string name="language_pack_help">Los paquetes de idioma se distribuyen por separado de la aplicación. Descarga un ZIP de modelo de los archivos de la versión e impórtalo aquí. No necesitas crear tu propio paquete.</string>
+    <string name="error_open_downloads">No se pudieron abrir las descargas. Abre la página de versiones del proyecto en tu navegador.</string>
 </resources>
