@@ -32,8 +32,8 @@ android {
         applicationId = "org.pockettts.android.engine"
         minSdk = 26
         targetSdk = 35
-        versionCode = 22
-        versionName = "0.5.2"
+        versionCode = 23
+        versionName = "0.5.3"
         ndk { abiFilters += listOf("arm64-v8a") }
         externalNativeBuild {
             cmake { cppFlags += listOf("-std=c++17", "-O3") }
