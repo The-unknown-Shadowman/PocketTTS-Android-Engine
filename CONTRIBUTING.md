@@ -16,11 +16,17 @@ Thanks for helping improve Pocket TTS Android Engine.
 
 ```bash
 ./scripts/prepare_android_native_deps.sh
-./gradlew clean :app:assembleDebug :app:lintDebug
+./gradlew clean :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug
 ./scripts/check_publishable.sh
 ```
 
-For TTS changes, test all of the following:
+For TTS changes, run the [public-client device regression test](docs/BUILDING.md#android-tts-integration-regression-test)
+and record the device, Android version, installed model packs, and result. A
+native synthesis self-test alone does not cover the Android service callback
+contract. Keep `onSynthesizeText` synchronous on the framework synthesis thread;
+all callback calls must complete before it returns.
+
+Also test all of the following:
 
 - Android's preferred-engine selector lists the service.
 - The Android TTS test produces complete audio.

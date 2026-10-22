@@ -12,6 +12,25 @@ voice.
 > Status: experimental community software. The current build targets ARM64
 > Android devices and has primarily been tested on Android 16.
 
+## Current release: 0.5.4
+
+[Download the signed APK](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/download/v0.5.4/PocketTTS-Android-Engine-0.5.4.apk)
+· [All downloads and checksums](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/tag/v0.5.4)
+· [Changelog](CHANGELOG.md)
+
+Version 0.5.4 fixes silent Android system TTS requests caused by an expired
+synthesis callback. Update from 0.5.3 if the app opens but Android TTS produces
+no speech. Install it over the previous official APK to keep imported models
+and settings; the signing certificate is unchanged.
+
+On October 22, 2026, the signed APK passed German and English file synthesis
+with non-silent PCM and German speaker playback through Android's public TTS
+API on an NX809J running Android 16. See [validation details](docs/VALIDATION.md)
+and the [device regression test](docs/BUILDING.md#android-tts-integration-regression-test).
+
+Android settings controls and client-specific engine routing are tracked in
+[issue #26](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/26).
+
 ## Features
 
 - Offline, on-device synthesis after installation and model import
@@ -69,18 +88,20 @@ export or build a model yourself.
    select **Pocket TTS Android Engine**.
 7. Restart the client application if it caches Android voices.
 
-Ready-to-use packs in release v0.5.2:
+Ready-to-use packs are included in the current release. These model files
+are unchanged from v0.5.2; existing installations can keep their imported packs:
 
 | Language | Release asset |
 | --- | --- |
-| English | `PocketTTS-english-FP32.zip` |
-| German | `PocketTTS-german-FP32.zip` |
-| Italian | `PocketTTS-italian-FP32.zip` |
-| Portuguese | `PocketTTS-portuguese-FP32.zip` |
-| Spanish | `PocketTTS-spanish-FP32.zip` |
+| English | [PocketTTS-english-FP32.zip](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/latest/download/PocketTTS-english-FP32.zip) |
+| German | [PocketTTS-german-FP32.zip](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/latest/download/PocketTTS-german-FP32.zip) |
+| Italian | [PocketTTS-italian-FP32.zip](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/latest/download/PocketTTS-italian-FP32.zip) |
+| Portuguese | [PocketTTS-portuguese-FP32.zip](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/latest/download/PocketTTS-portuguese-FP32.zip) |
+| Spanish | [PocketTTS-spanish-FP32.zip](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/latest/download/PocketTTS-spanish-FP32.zip) |
 
 German experimental variants are also available as
-`PocketTTS-german-24L-FP32.zip` and `PocketTTS-german-24L-INT8.zip`.
+[PocketTTS-german-24L-FP32.zip](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/latest/download/PocketTTS-german-24L-FP32.zip) and
+[PocketTTS-german-24L-INT8.zip](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/latest/download/PocketTTS-german-24L-INT8.zip).
 Start with the regular FP32 pack; see the memory and latency notes above for 24L.
 For older app versions without the download button, open the
 [release downloads](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/latest)
