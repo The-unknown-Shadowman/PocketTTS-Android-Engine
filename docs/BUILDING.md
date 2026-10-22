@@ -85,3 +85,31 @@ export POCKETTTS_KEY_PASSWORD='key password'
 Back up the keystore and its recovery secret securely. Every future update for
 the same Android application ID must be signed with this exact key. Never add a
 keystore, password file, or signing environment script to Git.
+
+## Android TTS integration regression test
+
+The native self-test does not exercise Android's `TextToSpeechService` callback
+lifetime. The device regression test uses a public `TextToSpeech` client to
+synthesize German and English WAV files, checks that they contain non-silent
+PCM, and plays a German sentence through Android's audio output. It fails if
+Android reports an error, stops the utterance, or never completes it.
+
+Use a test device with the regular German and English FP32 packs installed:
+
+```bash
+./gradlew :app:assembleDebug :app:assembleDebugAndroidTest
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb install -r -t app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+adb shell am instrument -w org.pockettts.android.engine.test/org.pockettts.android.engine.TtsIntegrationInstrumentation
+```
+
+A successful run reports `PASS` and instrumentation result code `-1`. The
+runner deletes its generated WAVs. Installing a debug APK over a release APK
+requires a matching certificate; for an existing release installation, build
+the signed release and sign the test APK with that same key before installing
+it. Do not uninstall a user's release app to run the test: that removes their
+imported models and settings.
+
+To reproduce only the first file-synthesis request on an older APK, add
+`-e baseline true` before the instrumentation component. CI builds the test
+APK; running it requires a connected device with the model packs.
