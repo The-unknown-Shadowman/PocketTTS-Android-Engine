@@ -10,11 +10,9 @@ import android.util.Log
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.Locale
-import java.util.concurrent.Executors
 import kotlin.math.min
 
 class PocketTtsService : TextToSpeechService() {
-    private val executor = Executors.newSingleThreadExecutor()
     @Volatile private var engine: NativePocketTts? = null
     @Volatile private var loadedVoiceName: String? = null
     private var engineKey: EngineKey? = null
@@ -80,67 +78,67 @@ class PocketTtsService : TextToSpeechService() {
     }
 
     override fun onSynthesizeText(request: SynthesisRequest, callback: SynthesisCallback) {
-        executor.execute {
-            val text = request.charSequenceText.toString()
-            val locale = Locale(request.language.orEmpty(), request.country.orEmpty(), request.variant.orEmpty())
-            val explicit = ModelPackRepository.findVoiceByName(this, request.voiceName)
-            val localeVoice = ModelPackRepository.findVoiceByLocale(this, locale)
-            val loaded = ModelPackRepository.findVoiceByName(this, loadedVoiceName)?.takeIf {
-                ModelPackRepository.languageMatches(it.first.locale, locale)
-            }
-            val resolved = explicit ?: localeVoice ?: loaded ?: ModelPackRepository.resolveVoice(this, request.voiceName, locale)
-            if (resolved == null) {
-                Log.e(TAG, "SYNTH_FAILED no installed voice for ${locale.toLanguageTag()}")
-                callback.error(TextToSpeech.ERROR_NOT_INSTALLED_YET)
-                return@execute
-            }
-            val (pack, voice) = resolved
-            Log.i(
-                TAG,
-                "SYNTH_START pack=${pack.id} voice=${voice.id} requestVoice=${request.voiceName} " +
-                    "loadedVoice=$loadedVoiceName locale=${request.language}-${request.country}-${request.variant} " +
-                    "chars=${text.length} maxBuffer=${callback.maxBufferSize}"
-            )
-            val tts = runCatching { obtainEngine(pack) }.getOrElse {
-                Log.e(TAG, "Pocket TTS model was unavailable for synthesis", it)
-                callback.error(TextToSpeech.ERROR_SERVICE)
-                return@execute
-            }
-            if (callback.start(SAMPLE_RATE, AudioFormat.ENCODING_PCM_16BIT, 1) != TextToSpeech.SUCCESS) {
-                Log.e(TAG, "SYNTH_START_REJECTED")
-                callback.error(TextToSpeech.ERROR_OUTPUT)
-                return@execute
-            }
-            var totalSamples = 0L
-            var androidBlocks = 0
-            val maxBlockBytes = callback.maxBufferSize.coerceAtLeast(2).let { it - (it % 2) }
-            val ok = tts.synthesize(text, voice.fileName, object : NativePocketTts.AudioSink {
-                override fun onAudio(samples: FloatArray): Boolean {
-                    val pcm = ByteBuffer.allocate(samples.size * 2).order(ByteOrder.LITTLE_ENDIAN)
-                    samples.forEach { pcm.putShort((it.coerceIn(-1f, 1f) * 32767f).toInt().toShort()) }
-                    val bytes = pcm.array()
-                    var offset = 0
-                    while (offset < bytes.size) {
-                        val length = min(maxBlockBytes, bytes.size - offset)
-                        if (callback.audioAvailable(bytes, offset, length) != TextToSpeech.SUCCESS) {
-                            Log.e(TAG, "SYNTH_AUDIO_REJECTED block=$androidBlocks offset=$offset length=$length")
-                            return false
-                        }
-                        offset += length
-                        androidBlocks++
+        // Android already calls this on its synthesis thread. The callback is valid
+        // only until this method returns, so all audio and done/error must be sent here.
+        val text = request.charSequenceText.toString()
+        val locale = Locale(request.language.orEmpty(), request.country.orEmpty(), request.variant.orEmpty())
+        val explicit = ModelPackRepository.findVoiceByName(this, request.voiceName)
+        val localeVoice = ModelPackRepository.findVoiceByLocale(this, locale)
+        val loaded = ModelPackRepository.findVoiceByName(this, loadedVoiceName)?.takeIf {
+            ModelPackRepository.languageMatches(it.first.locale, locale)
+        }
+        val resolved = explicit ?: localeVoice ?: loaded ?: ModelPackRepository.resolveVoice(this, request.voiceName, locale)
+        if (resolved == null) {
+            Log.e(TAG, "SYNTH_FAILED no installed voice for ${locale.toLanguageTag()}")
+            callback.error(TextToSpeech.ERROR_NOT_INSTALLED_YET)
+            return
+        }
+        val (pack, voice) = resolved
+        Log.i(
+            TAG,
+            "SYNTH_START pack=${pack.id} voice=${voice.id} requestVoice=${request.voiceName} " +
+                "loadedVoice=$loadedVoiceName locale=${request.language}-${request.country}-${request.variant} " +
+                "chars=${text.length} maxBuffer=${callback.maxBufferSize}"
+        )
+        val tts = runCatching { obtainEngine(pack) }.getOrElse {
+            Log.e(TAG, "Pocket TTS model was unavailable for synthesis", it)
+            callback.error(TextToSpeech.ERROR_SERVICE)
+            return
+        }
+        if (callback.start(SAMPLE_RATE, AudioFormat.ENCODING_PCM_16BIT, 1) != TextToSpeech.SUCCESS) {
+            Log.e(TAG, "SYNTH_START_REJECTED")
+            callback.error(TextToSpeech.ERROR_OUTPUT)
+            return
+        }
+        var totalSamples = 0L
+        var androidBlocks = 0
+        val maxBlockBytes = callback.maxBufferSize.coerceAtLeast(2).let { it - (it % 2) }
+        val ok = tts.synthesize(text, voice.fileName, object : NativePocketTts.AudioSink {
+            override fun onAudio(samples: FloatArray): Boolean {
+                val pcm = ByteBuffer.allocate(samples.size * 2).order(ByteOrder.LITTLE_ENDIAN)
+                samples.forEach { pcm.putShort((it.coerceIn(-1f, 1f) * 32767f).toInt().toShort()) }
+                val bytes = pcm.array()
+                var offset = 0
+                while (offset < bytes.size) {
+                    val length = min(maxBlockBytes, bytes.size - offset)
+                    if (callback.audioAvailable(bytes, offset, length) != TextToSpeech.SUCCESS) {
+                        Log.e(TAG, "SYNTH_AUDIO_REJECTED block=$androidBlocks offset=$offset length=$length")
+                        return false
                     }
-                    totalSamples += samples.size
-                    Log.i(TAG, "SYNTH_AUDIO samples=${samples.size} total=$totalSamples blocks=$androidBlocks")
-                    return true
+                    offset += length
+                    androidBlocks++
                 }
-            })
-            if (ok && totalSamples > 0) {
-                val done = callback.done()
-                Log.i(TAG, "SYNTH_DONE result=$done samples=$totalSamples blocks=$androidBlocks")
-            } else {
-                Log.e(TAG, "SYNTH_FAILED samples=$totalSamples blocks=$androidBlocks")
-                callback.error(TextToSpeech.ERROR_SYNTHESIS)
+                totalSamples += samples.size
+                Log.i(TAG, "SYNTH_AUDIO samples=${samples.size} total=$totalSamples blocks=$androidBlocks")
+                return true
             }
+        })
+        if (ok && totalSamples > 0) {
+            val done = callback.done()
+            Log.i(TAG, "SYNTH_DONE result=$done samples=$totalSamples blocks=$androidBlocks")
+        } else {
+            Log.e(TAG, "SYNTH_FAILED samples=$totalSamples blocks=$androidBlocks")
+            callback.error(TextToSpeech.ERROR_SYNTHESIS)
         }
     }
 
@@ -183,7 +181,6 @@ class PocketTtsService : TextToSpeechService() {
     override fun onStop() { engine?.stop() }
 
     override fun onDestroy() {
-        executor.shutdownNow()
         engine?.close()
         engine = null
         super.onDestroy()
