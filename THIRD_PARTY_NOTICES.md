@@ -14,6 +14,7 @@ by Kyutai, VolgaGerm, Microsoft, Google, mackron, Google Play, Android, or Layla
 | SentencePiece 0.2.1 | Text tokenization | [google/sentencepiece](https://github.com/google/sentencepiece) | Apache-2.0 |
 | dr_libs / dr_wav | WAV decoding | [mackron/dr_libs](https://github.com/mackron/dr_libs) | Public domain or MIT-0, at the user's option |
 | AndroidX Core and AppCompat | Android application support libraries | [androidx/androidx](https://github.com/androidx/androidx) | Apache-2.0 |
+| Sonic | Streaming speech speed and pitch processing | [waywardgeek/sonic](https://github.com/waywardgeek/sonic) | Apache-2.0; pinned source and license in `vendor/sonic` |
 | Kotlin | Android application language/runtime | [JetBrains/kotlin](https://github.com/JetBrains/kotlin) | Apache-2.0 |
 | Gradle | Build system | [gradle/gradle](https://github.com/gradle/gradle) | Apache-2.0 |
 
