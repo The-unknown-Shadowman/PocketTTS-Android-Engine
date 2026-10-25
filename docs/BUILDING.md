@@ -113,3 +113,40 @@ imported models and settings.
 To reproduce only the first file-synthesis request on an older APK, add
 `-e baseline true` before the instrumentation component. CI builds the test
 APK; running it requires a connected device with the model packs.
+
+
+## Settings, language metadata, speech rate, and pitch tests
+
+The integration runner now checks two successive `CHECK_TTS_DATA` results,
+ISO3 language/country and per-voice identifiers, localized sample text, native
+streaming pitch/duration measurements, German/English WAV synthesis, a 2x
+speech-rate request, and playback. Run the host DSP test as well:
+
+```bash
+python3 scripts/test_speech_effects.py
+./gradlew :app:testDebugUnitTest :app:assembleDebugAndroidTest :settings-probe:assembleDebug
+```
+
+The Settings probe is a separate test-only APK. It runs in its own process, so
+ending instrumentation does not tear down the engine while Settings is still
+bound to it. Select Pocket TTS as the device's preferred engine before running:
+
+```bash
+adb install -r settings-probe/build/outputs/apk/debug/settings-probe-debug.apk
+adb shell am instrument -w org.pockettts.android.settingsprobe/org.pockettts.android.engine.SettingsOnlyInstrumentation
+```
+
+It closes any existing TTS Settings page, opens and closes it, reopens it,
+requires both enabled sliders and the enabled sample button, and clicks the
+sample button. Supported button labels include English and German. Run it
+after the synthesis instrumentation, since the latter runs inside the engine
+process and Android ends that process when instrumentation finishes.
+
+The `settings-probe` APK is a development tool, not a release artifact. Remove
+it after testing. To check just the intent metadata against an older release,
+use `-e mode metadata` with `TtsIntegrationInstrumentation`.
+
+Sonic is pinned under `vendor/sonic`, licensed under Apache-2.0. Its license
+and notice are included in the production APK. Rates and pitches above zero
+are normalized against Android's 100-percent default and limited to Sonic's
+supported 0.05x–20x range. Non-positive inputs use 1x.

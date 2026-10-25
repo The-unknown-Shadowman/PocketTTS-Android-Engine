@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.5](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/tag/v0.5.5) — 2026-10-25
+
+- Fix Settings voice-data checks by returning ISO3 language/country IDs and matching per-voice variants.
+- Normalize ISO2/ISO3 language and country requests, report matching country/variant availability, and provide localized sample text through `GET_SAMPLE_TEXT`.
+- Apply Android speech-rate and pitch requests independently through streaming Sonic processing, keeping the output sample rate at 24 kHz. Neutral requests retain the original audio path.
+- Add host and on-device DSP measurements, repeated metadata checks, speech-rate regression, and a standalone Settings probe that closes and reopens the actual system page without terminating the engine process.
+- Validate the signed APK on NX809J / Android 16 and a Google Play Android 14 emulator. Settings controls remain enabled on both opens and sample playback succeeds.
+- Keep existing model packs and signing certificate. Uber-specific engine routing remains tracked in #28.
+
 ## [0.5.4](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/tag/v0.5.4) — 2026-10-22
 
 - Fix Android system TTS output: synthesize and deliver audio synchronously
