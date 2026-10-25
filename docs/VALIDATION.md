@@ -21,6 +21,7 @@ certificate as earlier releases. Test environments:
 | Settings sample button | Click succeeds on both; NX809J service reports `SYNTH_DONE result=0` |
 | JVM tests | 11 passed: 7 import-security and 4 locale-compatibility tests |
 | Host streaming DSP test | Six duration/frequency cases passed |
+| Native allocation regression | Sanitized host test passed; allocation multiplication is validated before use |
 
 The synthetic 200 Hz signal stays near 200 Hz at 2x speed, becomes about 400 Hz
 at 2x pitch while retaining approximately its original duration, and passes
@@ -39,13 +40,17 @@ not part of that check.
 ## Remaining Uber-specific work
 
 [Issue #28](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/28)
-requires a test inside Uber Driver. The emulator has Google Play and no initial
-Google account; the official Uber listing opens the Play sign-in screen.
-No Uber routing success is claimed from the generic TTS tests above. Uber's
-official Driver App Basics describes an active driver account before going
-online; its practice-trip option is also part of the driver-account workflow.
-A driver account or a reporter's on-device retest is needed to verify actual
-Uber navigation, even when the APK is installed in an emulator.
+requires a test inside Uber Driver. Version 4.602.10001 (317956) was obtained
+from APKMirror and installed only in the Android 14 emulator. The installed
+base and split APK signatures were verified and match the certificate published
+for `com.ubercab.driver` in [Uber's official Digital Asset Links](https://www.uber.com/.well-known/assetlinks.json).
+
+The app opens to “Sign up or Log in with Uber” and requests a phone number or
+another sign-in method. No account was created and no credentials were entered.
+Uber's [Driver App Basics](https://www.uber.com/us/en/drive/basics/) describes an
+active driver account before going online. A signed-in driver or the reporter's
+on-device retest is therefore still needed to verify navigation speech. No Uber
+routing success is claimed from the generic TTS tests above.
 
 ## Previous release validation
 
