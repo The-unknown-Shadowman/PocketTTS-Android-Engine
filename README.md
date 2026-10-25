@@ -12,10 +12,36 @@ voice.
 > Status: experimental community software. The current build targets ARM64
 > Android devices and has primarily been tested on Android 16.
 
+## Current release: 0.5.5
+
+[Download the signed APK](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/download/v0.5.5/PocketTTS-Android-Engine-0.5.5.apk)
+· [All downloads and checksums](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/tag/v0.5.5)
+· [Changelog](CHANGELOG.md)
+
+Version 0.5.5 fixes disabled Android TTS settings controls after reopening the
+settings page and adds independent speech-rate and pitch processing. It returns
+Android's ISO3 language/country identifiers, handles the sample-text activity,
+and normalizes both ISO2 and ISO3 language requests. Install it over the previous
+official APK to keep imported models and settings; the signing certificate is
+unchanged.
+
+On October 25, 2026, the signed APK passed public-client metadata, German and
+English file synthesis, independent speed/pitch measurements, and Android
+playback on an NX809J / Android 16 and an Android 14 emulator. Separate UI tests
+confirmed enabled sliders and sample playback controls after closing and
+reopening Settings on both. See [validation details](docs/VALIDATION.md) and the
+[device tests](docs/BUILDING.md#android-tts-integration-regression-test).
+
+[Issue #26](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/26)
+tracks the original settings report. Uber Driver routing is a separate
+[issue #28](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/28)
+and has not yet been verified inside Uber Driver.
+
 ## Features
 
 - Offline, on-device synthesis after installation and model import
 - Android system TTS integration
+- Independent Android speech-rate and pitch controls
 - Streaming PCM audio through the Android TTS callback
 - Importable FP32 or INT8 ONNX language packs
 - Multiple language packs and multiple voices per language
@@ -69,18 +95,20 @@ export or build a model yourself.
    select **Pocket TTS Android Engine**.
 7. Restart the client application if it caches Android voices.
 
-Ready-to-use packs in release v0.5.2:
+Ready-to-use packs are included in the current release. These model files
+are unchanged from v0.5.2; existing installations can keep their imported packs:
 
 | Language | Release asset |
 | --- | --- |
-| English | `PocketTTS-english-FP32.zip` |
-| German | `PocketTTS-german-FP32.zip` |
-| Italian | `PocketTTS-italian-FP32.zip` |
-| Portuguese | `PocketTTS-portuguese-FP32.zip` |
-| Spanish | `PocketTTS-spanish-FP32.zip` |
+| English | [PocketTTS-english-FP32.zip](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/latest/download/PocketTTS-english-FP32.zip) |
+| German | [PocketTTS-german-FP32.zip](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/latest/download/PocketTTS-german-FP32.zip) |
+| Italian | [PocketTTS-italian-FP32.zip](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/latest/download/PocketTTS-italian-FP32.zip) |
+| Portuguese | [PocketTTS-portuguese-FP32.zip](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/latest/download/PocketTTS-portuguese-FP32.zip) |
+| Spanish | [PocketTTS-spanish-FP32.zip](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/latest/download/PocketTTS-spanish-FP32.zip) |
 
 German experimental variants are also available as
-`PocketTTS-german-24L-FP32.zip` and `PocketTTS-german-24L-INT8.zip`.
+[PocketTTS-german-24L-FP32.zip](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/latest/download/PocketTTS-german-24L-FP32.zip) and
+[PocketTTS-german-24L-INT8.zip](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/latest/download/PocketTTS-german-24L-INT8.zip).
 Start with the regular FP32 pack; see the memory and latency notes above for 24L.
 For older app versions without the download button, open the
 [release downloads](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/latest)
