@@ -4,12 +4,15 @@
    This file is part of the Sonic Library.
 
    This file is licensed under the Apache 2.0 license.
+   Android integration modification, 2026-10-25: validate and widen allocation
+   sizes before multiplication in sonicRealloc.
 */
 
 #include "sonic.h"
 
 #include <limits.h>
 #include <math.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -126,7 +129,10 @@ static void* sonicCalloc(int num, int size) { return calloc(num, size); }
 
 /* Just call realloc */
 static void* sonicRealloc(void* p, int oldNum, int newNum, int size) {
-  return realloc(p, newNum * size);
+  if (newNum <= 0 || size <= 0 || (size_t)newNum > SIZE_MAX / (size_t)size) {
+    return NULL;
+  }
+  return realloc(p, (size_t)newNum * (size_t)size);
 }
 
 /* Just call free. */

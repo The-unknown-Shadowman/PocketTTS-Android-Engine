@@ -9,6 +9,42 @@ import unittest
 
 
 class SpeechEffectsTest(unittest.TestCase):
+    def test_allocation_sizes_use_size_t(self):
+        root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            source = Path(temp) / "allocation.c"
+            source.write_text(r'''
+#include <assert.h>
+#include <stddef.h>
+#include <stdlib.h>
+static size_t observed;
+static void* tracked_realloc(void* pointer, size_t bytes) {
+    observed = bytes;
+    return NULL; /* Check requested sizes without allocating huge buffers. */
+}
+#define realloc tracked_realloc
+#include "sonic.c"
+#undef realloc
+int main(void) {
+    sonicRealloc(NULL, 0, INT_MAX, 2);
+    assert(observed == (size_t)INT_MAX * 2);
+    observed = 0;
+    sonicRealloc(NULL, 0, -1, 2);
+    assert(observed == 0);
+    sonicRealloc(NULL, 0, 8, 0);
+    assert(observed == 0);
+    sonicRealloc(NULL, 0, INT_MAX, INT_MAX);
+    if ((size_t)INT_MAX <= SIZE_MAX / (size_t)INT_MAX)
+        assert(observed == (size_t)INT_MAX * (size_t)INT_MAX);
+    else assert(observed == 0);
+    return 0;
+}
+''')
+            executable = Path(temp) / "allocation-test"
+            subprocess.run(["cc", "-fsanitize=undefined", "-fno-sanitize-recover=all",
+                            "-I", str(root / "vendor/sonic"), str(source), "-lm", "-o", str(executable)], check=True)
+            subprocess.run([str(executable)], check=True)
+
     def test_streamed_duration_and_pitch(self):
         root = Path(__file__).resolve().parents[1]
         with tempfile.TemporaryDirectory() as temp:
