@@ -1,4 +1,55 @@
-# Release 0.5.4 validation
+# Release 0.5.5 validation
+
+Test date: October 25, 2026. Signed release APK, versionCode 25, using the same
+certificate as earlier releases. Test environments:
+
+- NX809J / Android 16 over wireless ADB, with existing installed model packs.
+- Google Play Android 14 emulator, using the same signed ARM64 APK through the
+  image's ARM64 native-bridge support and the public German/English FP32 packs.
+
+## Regression results
+
+| Check | Result |
+| --- | --- |
+| 0.5.4 baseline metadata | FAIL: returned `[de-DE, en-US]`, missing required ISO3 IDs |
+| 0.5.5 repeated metadata and sample-text activities | PASS on both environments |
+| German and English non-silent WAV synthesis | PASS on both environments |
+| 2x German speech-rate request | PASS; output shorter than 80% of neutral |
+| Independent native speed/pitch signal measurements, six combinations | PASS on both environments |
+| Android playback | Completion received on both; physical speaker tested on NX809J |
+| Settings page closed and reopened, both sliders and play enabled | PASS on both environments |
+| Settings sample button | Click succeeds on both; NX809J service reports `SYNTH_DONE result=0` |
+| JVM tests | 11 passed: 7 import-security and 4 locale-compatibility tests |
+| Host streaming DSP test | Six duration/frequency cases passed |
+
+The synthetic 200 Hz signal stays near 200 Hz at 2x speed, becomes about 400 Hz
+at 2x pitch while retaining approximately its original duration, and passes
+combined speed/pitch tests. Output is drained between 613-sample input chunks,
+including the final flush. This checks streaming boundaries as well as factors.
+
+The Settings test runs in a standalone probe process. It first closes an
+existing Settings fragment because an APK update or the in-process synthesis
+runner may have disconnected that fragment's old service binding. It then
+verifies two fresh openings without changing the preferred engine or sliders.
+
+The emulator's ARM64 translation makes model inference much slower than the
+physical device. Its virtual audio output completed; host audio audibility was
+not part of that check.
+
+## Remaining Uber-specific work
+
+[Issue #28](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/28)
+requires a test inside Uber Driver. The emulator has Google Play and no initial
+Google account; the official Uber listing opens the Play sign-in screen.
+No Uber routing success is claimed from the generic TTS tests above. Uber's
+official Driver App Basics describes an active driver account before going
+online; its practice-trip option is also part of the driver-account workflow.
+A driver account or a reporter's on-device retest is needed to verify actual
+Uber navigation, even when the APK is installed in an emulator.
+
+## Previous release validation
+
+### Release 0.5.4 validation
 
 Test date: October 22, 2026. Device: NX809J, Android 16, connected using
 wireless ADB. APK: official signed 0.5.4, versionCode 24. The installed APK,
@@ -37,6 +88,6 @@ Reproduction instructions are in
 
 [Issue #26](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/26)
 reports disabled speed/pitch/sample controls in Android settings and engine
-routing in specific clients on Android 14 and 15. The Android 16 client tests
-above do not establish that those separate reports are resolved; the issue
-remains open for reproduction and follow-up.
+routing in specific clients on Android 14 and 15. At the time of the 0.5.4 release, those separate reports remained open.
+The 0.5.5 checks above cover the Settings controls; Uber-specific routing is
+tracked separately in issue #28.

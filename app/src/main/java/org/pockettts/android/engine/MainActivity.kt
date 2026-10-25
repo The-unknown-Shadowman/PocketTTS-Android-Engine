@@ -3,6 +3,7 @@ package org.pockettts.android.engine
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -50,11 +51,26 @@ class MainActivity : Activity() {
         ModelPackRepository.migrateLegacy(this)
         ModelPackRepository.applySystemDefaultSelection(this)
         if (intent?.action == TextToSpeech.Engine.ACTION_CHECK_TTS_DATA) {
-            val languages = ArrayList(ModelPackRepository.list(this).map { it.languageTag }.distinct())
+            val packs = ModelPackRepository.list(this).filter { it.voices.isNotEmpty() }
+            val languages = TtsLocales.availableIds(packs.flatMap { pack ->
+                listOf(pack.locale) + pack.voices.map { ModelPackRepository.voiceLocale(pack, it) }
+            })
             val result = Intent()
                 .putStringArrayListExtra(TextToSpeech.Engine.EXTRA_AVAILABLE_VOICES, languages)
                 .putStringArrayListExtra(TextToSpeech.Engine.EXTRA_UNAVAILABLE_VOICES, arrayListOf())
-            setResult(TextToSpeech.Engine.CHECK_VOICE_DATA_PASS, result)
+            setResult(if (languages.isEmpty()) TextToSpeech.Engine.CHECK_VOICE_DATA_FAIL
+                else TextToSpeech.Engine.CHECK_VOICE_DATA_PASS, result)
+            finish()
+            return
+        }
+        if (intent?.action == TextToSpeech.Engine.ACTION_GET_SAMPLE_TEXT) {
+            val requested = TtsLocales.fromLegacy(intent.getStringExtra("language").orEmpty(),
+                intent.getStringExtra("country").orEmpty(), intent.getStringExtra("variant").orEmpty())
+            val sampleContext = if (requested.language.isBlank()) this else {
+                createConfigurationContext(Configuration(resources.configuration).apply { setLocale(requested) })
+            }
+            setResult(TextToSpeech.LANG_AVAILABLE, Intent()
+                .putExtra(TextToSpeech.Engine.EXTRA_SAMPLE_TEXT, sampleContext.getString(R.string.test_text)))
             finish()
             return
         }

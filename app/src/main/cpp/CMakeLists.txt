@@ -43,9 +43,11 @@ foreach(spm_tool spm_decode spm_encode spm_export_vocab spm_normalize spm_train)
     endif()
 endforeach()
 
-add_library(pockettts_jni SHARED "${POCKET_CPP}" jni_bridge.cpp)
+add_library(pockettts_jni SHARED "${POCKET_CPP}" jni_bridge.cpp speech_effects.cpp
+    "${POCKET_REPO_ROOT}/vendor/sonic/sonic.c")
 target_compile_definitions(pockettts_jni PRIVATE PTT_SHARED_LIB)
 target_include_directories(pockettts_jni PRIVATE
+    "${POCKET_REPO_ROOT}/vendor/sonic"
     "${ORT_HEADERS}"
     "${ORT_HEADERS}/onnxruntime/core/session"
     "${sentencepiece_SOURCE_DIR}/src"

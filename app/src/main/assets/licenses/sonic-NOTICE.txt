@@ -1,0 +1,2 @@
+Sonic library. Copyright 2010 Bill Cox. Licensed under the Apache License, Version 2.0.
+https://github.com/waywardgeek/sonic
