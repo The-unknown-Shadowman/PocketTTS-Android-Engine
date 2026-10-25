@@ -12,29 +12,36 @@ voice.
 > Status: experimental community software. The current build targets ARM64
 > Android devices and has primarily been tested on Android 16.
 
-## Current release: 0.5.4
+## Current release: 0.5.5
 
-[Download the signed APK](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/download/v0.5.4/PocketTTS-Android-Engine-0.5.4.apk)
-· [All downloads and checksums](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/tag/v0.5.4)
+[Download the signed APK](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/download/v0.5.5/PocketTTS-Android-Engine-0.5.5.apk)
+· [All downloads and checksums](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/tag/v0.5.5)
 · [Changelog](CHANGELOG.md)
 
-Version 0.5.4 fixes silent Android system TTS requests caused by an expired
-synthesis callback. Update from 0.5.3 if the app opens but Android TTS produces
-no speech. Install it over the previous official APK to keep imported models
-and settings; the signing certificate is unchanged.
+Version 0.5.5 fixes disabled Android TTS settings controls after reopening the
+settings page and adds independent speech-rate and pitch processing. It returns
+Android's ISO3 language/country identifiers, handles the sample-text activity,
+and normalizes both ISO2 and ISO3 language requests. Install it over the previous
+official APK to keep imported models and settings; the signing certificate is
+unchanged.
 
-On October 22, 2026, the signed APK passed German and English file synthesis
-with non-silent PCM and German speaker playback through Android's public TTS
-API on an NX809J running Android 16. See [validation details](docs/VALIDATION.md)
-and the [device regression test](docs/BUILDING.md#android-tts-integration-regression-test).
+On October 25, 2026, the signed APK passed public-client metadata, German and
+English file synthesis, independent speed/pitch measurements, and Android
+playback on an NX809J / Android 16 and an Android 14 emulator. Separate UI tests
+confirmed enabled sliders and sample playback controls after closing and
+reopening Settings on both. See [validation details](docs/VALIDATION.md) and the
+[device tests](docs/BUILDING.md#android-tts-integration-regression-test).
 
-Android settings controls and client-specific engine routing are tracked in
-[issue #26](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/26).
+[Issue #26](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/26)
+tracks the original settings report. Uber Driver routing is a separate
+[issue #28](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/28)
+and has not yet been verified inside Uber Driver.
 
 ## Features
 
 - Offline, on-device synthesis after installation and model import
 - Android system TTS integration
+- Independent Android speech-rate and pitch controls
 - Streaming PCM audio through the Android TTS callback
 - Importable FP32 or INT8 ONNX language packs
 - Multiple language packs and multiple voices per language
