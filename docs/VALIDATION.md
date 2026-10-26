@@ -37,6 +37,29 @@ The emulator's ARM64 translation makes model inference much slower than the
 physical device. Its virtual audio output completed; host audio audibility was
 not part of that check.
 
+## Community confirmation and support scope
+
+On October 26, 2026, the reporter of
+[issue #26 confirmed 0.5.5](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/26#issuecomment-6405685427)
+on an Android 14 phone, an Android 15 tablet, and an Oppo Android 15 phone.
+Closing and reopening system TTS Settings, speech-rate and pitch controls,
+and Tecarta Bible 8.0.2 controls were reported working. These are community
+results, separate from the developer-run tests above. Slow synthesis and
+glitches were also reported on the weaker devices; dedicated weak-device
+performance optimization is outside the project's development goals.
+
+The same report describes no speech output in Waydroid with Android 13
+LineageOS, despite enabled system controls. This is an unresolved environment
+compatibility report, not evidence of a general Android 13 defect. Waydroid
+is experimental and not officially supported. A limited log review can check
+for a general app defect; a dedicated Waydroid or x86 port is outside the
+current scope. There has been no developer reproduction of that environment.
+
+The technical minimum remains Android 8.0 / API 26, with an ARM64-only APK.
+Physical Android 8 through 13 devices have not been validated by these tests.
+See [support scope](../README.md#compatibility-and-support) and
+[diagnostic steps](TROUBLESHOOTING.md).
+
 ## Remaining Uber-specific work
 
 [Issue #28](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/28)
@@ -51,6 +74,21 @@ Uber's [Driver App Basics](https://www.uber.com/us/en/drive/basics/) describes a
 active driver account before going online. A signed-in driver or the reporter's
 on-device retest is therefore still needed to verify navigation speech. No Uber
 routing success is claimed from the generic TTS tests above.
+
+The reporter identified a **Sounds and Voice** test button that can reproduce
+the selected navigation voice without going online. On October 26, a focused
+[0.5.5 retest was requested](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/28#issuecomment-6411380460),
+including system language/region and navigation language.
+
+Static inspection of the same APK found a navigation engine-selection branch
+controlled by `enable_google_text_to_speech_as_default_engine`. If enabled and
+Google TTS is available, that branch explicitly requests Google TTS; otherwise
+it uses Android's default engine. The compiled flag default is false. This does
+not establish the reporter's effective configuration or prove the cause of
+issue #28. The inspected navigation language check accepts language-only
+availability, so the country-support difference with another TTS engine does
+not by itself justify a compatibility patch. The signed-in voice test remains
+unverified by the developer.
 
 ## Previous release validation
 
