@@ -9,8 +9,9 @@ voice.
 
 ![Pocket TTS Android Engine artwork](app/src/main/res/drawable-nodpi/pocket_voice_hero.png)
 
-> Status: experimental community software. The current build targets ARM64
-> Android devices and has primarily been tested on Android 16.
+> Status: experimental community software for ARM64 Android devices.
+> See [compatibility and support](#compatibility-and-support) for requirements
+> and the environments covered by testing.
 
 ## Current release: 0.5.5
 
@@ -36,6 +37,34 @@ reopening Settings on both. See [validation details](docs/VALIDATION.md) and the
 tracks the original settings report. Uber Driver routing is a separate
 [issue #28](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/28)
 and has not yet been verified inside Uber Driver.
+
+## Compatibility and support
+
+The APK requires **Android 8.0 / API 26 or newer** and **ARM64 (`arm64-v8a`)**.
+The minimum Android version is a technical installation requirement; it does
+not mean every Android version and device has been tested.
+
+Developer tests cover an Android 16 ARM64 phone and an Android 14 emulator
+with ARM64 translation. Community testing additionally confirms working
+system TTS controls, speech, rate, and pitch on Android 14 and 15 phones and
+tablets. See the [validation report](docs/VALIDATION.md) for the exact scope.
+Android 8 through 13 on physical devices has not been validated by these tests.
+
+Waydroid is experimental and **not officially supported**. Its Android 13
+environment has a report of no speech output. On an x86 host, this ARM64 APK
+also depends on a working ARM translation layer; the Android version alone
+does not establish the cause. A limited diagnostic review can identify a
+general app defect, but dedicated Waydroid support and an x86 port are outside
+the current project scope. This report does not change the Android minimum.
+
+Dedicated performance optimization for weaker devices is not a development
+goal. Synthesis latency and playback smoothness depend on the hardware and
+model. General crashes and functional defects can still be investigated.
+Uber Driver compatibility remains an active investigation in
+[issue #28](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/28).
+
+For a reproducible compatibility report, use the focused
+[diagnostic steps](docs/TROUBLESHOOTING.md).
 
 ## Features
 

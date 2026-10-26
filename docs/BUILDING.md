@@ -63,11 +63,18 @@ TTS client to synthesize a short sentence. Log entries named `VOICE_LOADED`,
 `ENGINE_READY`, `SYNTH_AUDIO`, and `SYNTH_DONE` show the selection and streaming
 path.
 
+For device architecture checks and a short filtered capture for Waydroid or
+Uber reports, see [Compatibility diagnostics](TROUBLESHOOTING.md).
+
 ## Architecture support
 
 The current Gradle configuration builds only `arm64-v8a`. Supporting another
 ABI requires a matching ONNX Runtime native library and testing all native
 dependencies for that ABI.
+
+The minimum Android version remains Android 8.0 / API 26. Check the
+[project support scope](../README.md#compatibility-and-support) before adding
+an ABI, changing the minimum version, or proposing device-specific work.
 
 ## Create a signed release build
 
