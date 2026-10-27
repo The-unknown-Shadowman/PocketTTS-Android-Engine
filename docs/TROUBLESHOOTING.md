@@ -31,9 +31,10 @@ translation layer can execute every native dependency in the APK.
 
 ## Capture one short test
 
-First check whether the in-app self-test and Android system TTS sample work.
-For an app-specific failure, state which of those checks succeeds. Then run
-this filtered capture and trigger the failing sample once:
+First check whether Android's system TTS sample works. For an app-specific
+failure, report whether the same voice works in system Settings. Then run
+this filtered capture and trigger the failing sample once. A native self-test
+is optional; its developer-only entry point is explained below.
 
 ```sh
 adb -s "$TTS_DEVICE" logcat -T 1 -v threadtime \
@@ -54,6 +55,30 @@ or fatal native error from the same test window.
 
 For Waydroid, these details allow a limited check for a general app defect.
 They do not commit the project to maintaining a dedicated Waydroid port.
+
+## Optional native self-test (ADB only)
+
+Version 0.5.5 does not expose a self-test button in its normal app screen.
+The native diagnostic is a developer activity action, separate from the
+**Play** button in Android TTS Settings.
+
+Close Android TTS Settings and select an installed pack and voice in Pocket
+TTS. With `TTS_DEVICE` set as above, launch the diagnostic:
+
+```sh
+adb -s "$TTS_DEVICE" shell am start -W \
+  --activity-new-task --activity-clear-task \
+  -n org.pockettts.android.engine/.MainActivity \
+  -a org.pockettts.android.engine.SELF_TEST
+```
+
+The activity shows **Pocket TTS self-test is running…**, followed by a success
+message with a sample count or a failure message if the operation returns.
+It generates a private `selftest.wav`; it does not automatically play audio.
+Its log markers are `SELF_TEST_CHUNK`, `SELF_TEST_OK`, and `SELF_TEST_FAILED`.
+If the screen keeps showing the running message, report the elapsed time
+rather than assuming success, failure, or an audio-output problem. Reopen
+Pocket TTS normally afterwards to return to the configuration screen.
 
 ## Uber Driver voice test
 
