@@ -64,4 +64,15 @@
     <string name="download_language_packs">Sprachpakete herunterladen</string>
     <string name="language_pack_help">Sprachpakete werden getrennt von der App bereitgestellt. Lade eine Modell-ZIP aus den Release-Dateien herunter und importiere sie hier. Du musst kein eigenes Paket erstellen.</string>
     <string name="error_open_downloads">Die Downloads konnten nicht geöffnet werden. Öffne die Releases des Projekts im Browser.</string>
+    <string name="read_aloud">Text vorlesen</string>
+    <string name="read_aloud_help">Teile einfachen Text mit Pocket TTS oder füge ihn hier ein. Tippe auf Vorlesen, um das in Pocket TTS gewählte Paket und die Stimme zu verwenden.</string>
+    <string name="read_aloud_text">Text zum Vorlesen</string>
+    <string name="read_aloud_play">Vorlesen</string>
+    <string name="read_aloud_stop">Stopp</string>
+    <string name="read_aloud_configure">Paket und Stimme wählen</string>
+    <string name="read_aloud_too_long">Der geteilte Text überschreitet %1$d Zeichen. Teile einen kürzeren Ausschnitt.</string>
+    <string name="read_aloud_failed">Der Text konnte nicht vorgelesen werden. Prüfe das installierte Paket und die Stimme.</string>
+    <string name="read_aloud_done">Vorlesen beendet.</string>
+    <string name="read_aloud_reading">Wird vorgelesen…</string>
+    <string name="read_aloud_stopped">Gestoppt.</string>
 </resources>

@@ -25,6 +25,16 @@
             </intent-filter>
             <meta-data android:name="android.speech.tts" android:resource="@xml/tts_engine" />
         </service>
+        <!-- A real read-aloud destination also makes this package discoverable
+             to TTS clients whose queries include SEND / text/plain (issue #28). -->
+        <activity android:name=".ReadAloudActivity" android:exported="true"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,0 +1,6 @@
+<resources>
+    <item name="read_aloud_text" type="id" />
+    <item name="read_aloud_play" type="id" />
+    <item name="read_aloud_stop" type="id" />
+    <item name="read_aloud_status" type="id" />
+</resources>

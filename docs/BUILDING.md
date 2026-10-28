@@ -157,3 +157,33 @@ Sonic is pinned under `vendor/sonic`, licensed under Apache-2.0. Its license
 and notice are included in the production APK. Rates and pitches above zero
 are normalized against Android's 100-percent default and limited to Sonic's
 supported 0.05x–20x range. Non-positive inputs use 1x.
+
+## Client package-discovery and plain-text sharing regression
+
+`discovery-probe` is a separate test-only APK targeting API 36. Its only
+visibility declaration is `SEND` / `text/plain`, reproducing the relevant
+Uber query without granting TTS-service or explicit Pocket-package visibility.
+It checks engine discovery **before** opening Pocket, since a direct interaction
+can itself grant visibility. With Pocket selected as the system preferred
+engine, install and run it on a test device with a model pack and voice:
+
+```bash
+./gradlew :discovery-probe:assembleDebug
+adb install -r discovery-probe/build/outputs/apk/debug/discovery-probe-debug.apk
+adb shell am instrument -w org.pockettts.android.discoveryprobe/.DiscoveryInstrumentation
+```
+
+The default run verifies Pocket visibility, default-engine initialization,
+non-silent file synthesis, plain-text sharing without automatic speech,
+read-aloud completion, stop, empty input, and oversized input rejection.
+For discovery only, add `-e mode discovery`. To reproduce the 0.5.5 fallback
+on a Google-equipped test device, add `-e expected-engine com.google.android.tts`;
+this expects Pocket to be filtered out despite being the preferred engine.
+The runner deletes its generated WAV. Remove the probe after testing:
+
+```bash
+adb uninstall org.pockettts.android.discoveryprobe
+```
+
+This test reproduces the visibility mechanism. It does not sign into Uber or
+verify Uber account-specific engine-selection configuration.

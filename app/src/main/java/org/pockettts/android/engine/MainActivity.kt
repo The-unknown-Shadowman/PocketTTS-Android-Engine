@@ -172,6 +172,10 @@ class MainActivity : Activity() {
         }, matchWidth())
 
         content.addView(Button(this).apply {
+            text = getString(R.string.read_aloud)
+            setOnClickListener { startActivity(Intent(this@MainActivity, ReadAloudActivity::class.java)) }
+        }, matchWidth(top = 12))
+        content.addView(Button(this).apply {
             text = getString(R.string.open_android_tts)
             setOnClickListener { openTtsSettings() }
         }, matchWidth(top = 12))

@@ -10,6 +10,7 @@ if find . \
   -path ./.kotlin -prune -o \
   -path ./app/build -prune -o \
   -path ./settings-probe/build -prune -o \
+  -path ./discovery-probe/build -prune -o \
   -path ./app/.cxx -prune -o \
   -path ./app/src/main/jniLibs -prune -o \
   -path ./app/src/main/third_party -prune -o \

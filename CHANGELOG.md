@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.6-rc1 — Uber discovery compatibility candidate
+
+- Add a real plain-text share destination and a read-aloud screen with review, selected pack/voice, explicit playback, and stop controls in all five UI languages.
+- Make the engine discoverable through the `SEND` / `text/plain` query used by Uber Driver 4.602.10001, addressing the reporter-confirmed package filtering in #28.
+- Add a separate-UID discovery regression client without a TTS-service query, covering default-engine synthesis and the share workflow.
+- Keep existing model packs, ARM64 ABI, Android minimum, and release certificate. This is a prerelease; signed-in Uber confirmation remains pending.
+
+
 ## [0.5.5](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/tag/v0.5.5) — 2026-10-25
 
 - Fix Settings voice-data checks by returning ISO3 language/country IDs and matching per-voice variants.

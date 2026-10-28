@@ -28,4 +28,4 @@ jobs:
       - name: Test speech processing
         run: python3 scripts/test_speech_effects.py
       - name: Build and lint
-        run: ./gradlew --no-daemon :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :settings-probe:assembleDebug :app:lintDebug
+        run: ./gradlew --no-daemon :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :settings-probe:assembleDebug :discovery-probe:assembleDebug :app:lintDebug

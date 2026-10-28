@@ -66,4 +66,15 @@
     <string name="download_language_packs">Download language packs</string>
     <string name="language_pack_help">Language packs are provided separately from the app. Download a model ZIP from the release assets below, then import it here. You do not need to build your own pack.</string>
     <string name="error_open_downloads">Could not open the downloads. Visit the project Releases page in your browser.</string>
+    <string name="read_aloud">Read text aloud</string>
+    <string name="read_aloud_help">Share plain text to Pocket TTS or paste it here. Press Read aloud to use the pack and voice selected in Pocket TTS.</string>
+    <string name="read_aloud_text">Text to read aloud</string>
+    <string name="read_aloud_play">Read aloud</string>
+    <string name="read_aloud_stop">Stop</string>
+    <string name="read_aloud_configure">Choose pack and voice</string>
+    <string name="read_aloud_too_long">The shared text exceeds %1$d characters. Share a shorter selection.</string>
+    <string name="read_aloud_failed">Could not read the text. Check the installed pack and voice.</string>
+    <string name="read_aloud_done">Finished reading.</string>
+    <string name="read_aloud_reading">Reading…</string>
+    <string name="read_aloud_stopped">Stopped.</string>
 </resources>
