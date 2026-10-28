@@ -174,4 +174,4 @@ Uber policy. The reporter still needs to restart Uber with Pocket preferred
 and test **Sounds and Voice**. Issue #28 remains open until that result arrives.
 The old model packs are unchanged and need no new download.
 
-Candidate APK SHA-256: `34259808f9879103650876ac039ad240901d61ea76a86d62dfb029394bdb0fcc`.
+Candidate APK SHA-256: `0c563477bfaa8b8eb71e6b98a78885f72843c65447a7c5546974d94365d06b79`.
