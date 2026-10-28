@@ -28,7 +28,7 @@
         <!-- A real read-aloud destination also makes this package discoverable
              to TTS clients whose queries include SEND / text/plain (issue #28). -->
         <activity android:name=".ReadAloudActivity" android:exported="true"
-            android:label="@string/read_aloud">
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
