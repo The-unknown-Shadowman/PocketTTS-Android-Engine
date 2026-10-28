@@ -1,4 +1,6 @@
-# Release 0.5.5 validation
+# Validation and compatibility checks
+
+## Release 0.5.5
 
 Test date: October 25, 2026. Signed release APK, versionCode 25, using the same
 certificate as earlier releases. Test environments:
@@ -134,3 +136,42 @@ reports disabled speed/pitch/sample controls in Android settings and engine
 routing in specific clients on Android 14 and 15. At the time of the 0.5.4 release, those separate reports remained open.
 The 0.5.5 checks above cover the Settings controls; Uber-specific routing is
 tracked separately in issue #28.
+
+## 0.5.6-rc1: Uber discovery candidate, October 28, 2026
+
+Signed ARM64 release candidate, versionCode 26, with the existing official
+certificate and previously imported English/German FP32 packs retained after
+an in-place update. Stable release remains 0.5.5. Tested on the Google Play
+Android 14 x86_64 emulator with ARM64 translation; no new physical-device
+or signed-in Uber result is claimed.
+
+The reporter supplied an `AppsFilter` trace confirming Uber-to-Pocket package
+filtering, followed by Google TTS binding:
+[issue #28 evidence](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/28#issuecomment-6455963203).
+The candidate exposes a genuine `SEND` / `text/plain` read-aloud destination,
+matching a discovery query already present in Uber Driver 4.602.10001.
+
+| Test | 0.5.5 | 0.5.6-rc1 |
+| --- | --- | --- |
+| Separate UID with complete queries from Uber APK | Only Google visible; effective engine Google | Google and Pocket visible; effective engine Pocket, `english-fp32::alba` |
+| Fresh-installed client with only SEND/text/plain query | Only Google visible despite Pocket system preference | Pocket visible and used by default |
+| Non-silent WAV from that default client | Not requested | PASS, 36,720 samples through Pocket |
+| Share text, no automatic speech, then explicit Read aloud | Not available | PASS; playback completion received |
+| Stop button | Not available | PASS; reading stops |
+| Empty text and oversized shared text | Not available | PASS; no speech request, oversized text rejected |
+| JVM tests, host DSP tests | Previous validation above | PASS: 11 JVM tests and both host DSP/allocation tests |
+| Debug/release build and lint; separate probe build/lint | Previous validation above | PASS; lint has no errors |
+
+Visibility was tested before the client opened Pocket; direct interaction can
+itself grant package visibility. The complete-query client and the narrow-query
+client run under different UIDs from the engine. The narrow client was freshly
+installed for the candidate run. No `--force-queryable`, global visibility
+setting, or modification of Uber was used. The system preferred engine remained
+Pocket throughout the before/after comparison.
+
+The candidate does not override explicit Google selection or an account-side
+Uber policy. The reporter still needs to restart Uber with Pocket preferred
+and test **Sounds and Voice**. Issue #28 remains open until that result arrives.
+The old model packs are unchanged and need no new download.
+
+Candidate APK SHA-256: `34259808f9879103650876ac039ad240901d61ea76a86d62dfb029394bdb0fcc`.

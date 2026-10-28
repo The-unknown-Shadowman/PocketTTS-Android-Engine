@@ -38,6 +38,23 @@ tracks the original settings report. Uber Driver routing is a separate
 [issue #28](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/28)
 and has not yet been verified inside Uber Driver.
 
+## Uber compatibility candidate: 0.5.6-rc1
+
+[Download the signed test APK](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/tag/v0.5.6-rc1).
+The stable release remains 0.5.5. This candidate adds **Read text aloud** and
+an Android **Share → Pocket TTS** destination for plain text. Text is shown
+for review; speech starts only when you press **Read aloud**, using the pack
+and voice selected in Pocket TTS. **Stop** or leaving the screen stops reading.
+Share a selection within Android's 4,000-character TTS input limit.
+
+The share destination also makes Pocket discoverable to clients such as
+Uber Driver 4.602.10001 whose package queries include plain-text sharing but
+omit TTS-service discovery. This addresses the package filtering confirmed in
+[issue #28](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/28).
+It does not override a client that explicitly selects Google. A signed-in Uber
+voice-test confirmation is still required before claiming full compatibility.
+Existing imported model packs remain usable; install over the official APK.
+
 ## Compatibility and support
 
 The APK requires **Android 8.0 / API 26 or newer** and **ARM64 (`arm64-v8a`)**.

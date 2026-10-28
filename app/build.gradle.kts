@@ -33,8 +33,8 @@ android {
         testInstrumentationRunner = "org.pockettts.android.engine.TtsIntegrationInstrumentation"
         minSdk = 26
         targetSdk = 35
-        versionCode = 25
-        versionName = "0.5.5"
+        versionCode = 26
+        versionName = "0.5.6-rc1"
         ndk { abiFilters += listOf("arm64-v8a") }
         externalNativeBuild {
             cmake { cppFlags += listOf("-std=c++17", "-O3") }

@@ -64,4 +64,15 @@
     <string name="download_language_packs">Descargar paquetes de idioma</string>
     <string name="language_pack_help">Los paquetes de idioma se distribuyen por separado de la aplicación. Descarga un ZIP de modelo de los archivos de la versión e impórtalo aquí. No necesitas crear tu propio paquete.</string>
     <string name="error_open_downloads">No se pudieron abrir las descargas. Abre la página de versiones del proyecto en tu navegador.</string>
+    <string name="read_aloud">Leer texto en voz alta</string>
+    <string name="read_aloud_help">Comparte texto con Pocket TTS o pégalo aquí. Pulsa Leer en voz alta para usar el paquete y la voz seleccionados en Pocket TTS.</string>
+    <string name="read_aloud_text">Texto para leer</string>
+    <string name="read_aloud_play">Leer en voz alta</string>
+    <string name="read_aloud_stop">Detener</string>
+    <string name="read_aloud_configure">Elegir paquete y voz</string>
+    <string name="read_aloud_too_long">El texto compartido supera los %1$d caracteres. Comparte un fragmento más corto.</string>
+    <string name="read_aloud_failed">No se pudo leer el texto. Comprueba el paquete y la voz instalados.</string>
+    <string name="read_aloud_done">Lectura finalizada.</string>
+    <string name="read_aloud_reading">Leyendo…</string>
+    <string name="read_aloud_stopped">Detenido.</string>
 </resources>

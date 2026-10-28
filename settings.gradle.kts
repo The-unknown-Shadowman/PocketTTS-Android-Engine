@@ -10,4 +10,4 @@ dependencyResolutionManagement {
     repositories { google(); mavenCentral() }
 }
 rootProject.name = "PocketTtsAndroidEngine"
-include(":app", ":settings-probe")
+include(":app", ":settings-probe", ":discovery-probe")

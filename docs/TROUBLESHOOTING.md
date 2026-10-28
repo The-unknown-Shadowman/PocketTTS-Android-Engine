@@ -82,16 +82,18 @@ Pocket TTS normally afterwards to return to the configuration screen.
 
 ## Uber Driver voice test
 
-1. Confirm Pocket TTS 0.5.5 or newer and a pack/voice for the navigation
-   language are installed.
+1. For issue #28, install the signed 0.5.6-rc1 candidate over the official
+   APK and confirm a pack/voice for the navigation language is installed.
+   Version 0.5.5 is affected by the confirmed package-discovery problem.
 2. Select Pocket TTS as Android's preferred engine and verify the system sample.
 3. Fully restart Uber Driver so it can recreate any cached TTS client.
 4. With an existing driver account, open **Sounds and Voice** and press its
    voice-test button. The reporter says an active trip or going online is not
    needed for this test.
 5. Report the Uber version, system language/region, navigation language, and
-   whether the sample uses Pocket TTS. If it still fails, capture that single
-   test using the filter above.
+   whether the sample uses Pocket TTS. Existing language packs do not need
+   to be downloaded again. No further full logs are needed for the already
+   confirmed discovery failure.
 
 No driver credentials, customer information, or trip details are needed.
 [Issue #28](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/28)

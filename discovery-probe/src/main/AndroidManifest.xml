@@ -1,0 +1,13 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Deliberately no TTS_SERVICE or Pocket package query. The SEND query is
+         the relevant discovery path present in Uber Driver 4.602.10001. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SEND" />
+            <data android:mimeType="text/plain" />
+        </intent>
+    </queries>
+    <instrumentation android:name=".DiscoveryInstrumentation"
+        android:targetPackage="org.pockettts.android.discoveryprobe" />
+    <application android:label="Pocket TTS Discovery Probe" android:allowBackup="false" />
+</manifest>
