@@ -1266,6 +1266,14 @@ def main():
                                 config=str(config_path) if args.config else None)
     model.eval()
     print(f"  Voice cloning: {model.has_voice_cloning}")
+    if not model.has_voice_cloning:
+        raise RuntimeError(
+            "Cannot export an Android model pack from weights without voice cloning. "
+            "The Android runtime encodes reference WAV files, but these fallback "
+            "weights do not support that path. Accept the model conditions at "
+            "https://huggingface.co/kyutai/pocket-tts and authenticate with "
+            "`hf auth login`, then retry. No model files have been exported."
+        )
 
     # The C++ runtime needs a standalone SentencePiece file. The upstream
     # config stores it as an hf:// URL; resolve that pinned URL directly.
