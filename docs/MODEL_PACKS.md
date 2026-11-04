@@ -94,6 +94,23 @@ INT8 substantially reduces the three quantized model files. The encoder and
 text conditioner remain FP32. Quality and device performance vary, so compare
 the same prompts and voice sample before publishing an INT8 release.
 
+The exporter requires the voice-cloning weights for **both** FP32 and INT8
+packs, because Android voices are reference WAV files. If access to those
+weights fails, the upstream loader can fall back to weights without voice
+cloning. The exporter rejects that fallback before writing model files; it
+cannot produce a working WAV encoder from those weights. Accept the upstream
+model conditions, run `hf auth login`, and retry the export.
+
+English INT8 is experimental. Issue [#35](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/35)
+reports occasional metallic speech even after replacing the encoder with the
+one from the released English FP32 pack. This is not yet a validated release
+configuration. To investigate, include the repository commit, Python/PyTorch/
+ONNX/ONNX Runtime versions, export validation output, the SHA-256 of each
+pack's encoder, and a short failing text with the voice and generation settings.
+Compare against FP32 with the same reference WAV. Replacing an encoder is a
+diagnostic workaround, not proof that quantization caused the encoder problem:
+the standard INT8 export already leaves it in FP32.
+
 ## Add an authorized bundled voice while building
 
 The safest public pack contains no recording. Users can import a consented WAV
