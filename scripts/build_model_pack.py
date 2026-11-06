@@ -13,6 +13,12 @@ from pathlib import Path
 
 
 SHARED_MODELS = ("mimi_encoder.onnx", "text_conditioner.onnx", "tokenizer.model")
+INT8_PROFILES = {
+    "all": {"flow_lm_main", "flow_lm_flow", "mimi_decoder"},
+    "main-only": {"flow_lm_main"},
+    "main-flow": {"flow_lm_main", "flow_lm_flow"},
+    "main-decoder": {"flow_lm_main", "mimi_decoder"},
+}
 
 
 def parse_voice(value: str) -> tuple[str, str, Path]:
@@ -36,6 +42,8 @@ def arguments() -> argparse.Namespace:
     parser.add_argument("--name", required=True)
     parser.add_argument("--language", required=True, help="BCP-47 language tag, e.g. de-DE")
     parser.add_argument("--precision", choices=("fp32", "int8"), default="fp32")
+    parser.add_argument("--int8-profile", choices=INT8_PROFILES, default="all",
+                        help="INT8 components; other components are copied from FP32 (default: all)")
     parser.add_argument("--temperature", type=float, default=0.7)
     parser.add_argument("--lsd-steps", type=int, default=1)
     parser.add_argument("--threads", type=int, default=2)
@@ -48,15 +56,16 @@ def arguments() -> argparse.Namespace:
 
 def main() -> None:
     args = arguments()
+    if args.precision != "int8" and args.int8_profile != "all":
+        raise SystemExit("An INT8 profile requires --precision int8.")
     source_models = args.models_dir.expanduser().resolve()
     suffix = "_int8" if args.precision == "int8" else ""
-    precision_models = (
-        f"flow_lm_flow{suffix}.onnx",
-        f"flow_lm_main{suffix}.onnx",
-        f"mimi_decoder{suffix}.onnx",
-    )
-    model_names = SHARED_MODELS + precision_models
-    missing = [name for name in model_names if not (source_models / name).is_file()]
+    quantized = INT8_PROFILES[args.int8_profile] if args.precision == "int8" else set()
+    model_files = {name: name for name in SHARED_MODELS}
+    for name in ("flow_lm_flow", "flow_lm_main", "mimi_decoder"):
+        source_suffix = "_int8" if name in quantized else ""
+        model_files[f"{name}{source_suffix}.onnx"] = f"{name}{suffix}.onnx"
+    missing = [name for name in model_files if not (source_models / name).is_file()]
     if missing:
         raise SystemExit("Missing model files: " + ", ".join(missing))
 
@@ -68,8 +77,8 @@ def main() -> None:
         voices = root / "voices"
         models.mkdir()
         voices.mkdir()
-        for name in model_names:
-            shutil.copy2(source_models / name, models / name)
+        for source_name, target_name in model_files.items():
+            shutil.copy2(source_models / source_name, models / target_name)
 
         manifest_voices = []
         for voice_id, display_name, source in args.voice:
@@ -95,6 +104,8 @@ def main() -> None:
             "threads": args.threads,
             "voices": manifest_voices,
         }
+        if args.precision == "int8":
+            manifest["int8Profile"] = args.int8_profile
         if args.source_url:
             manifest["source"] = args.source_url
         (root / "manifest.json").write_text(
