@@ -111,6 +111,51 @@ Compare against FP32 with the same reference WAV. Replacing an encoder is a
 diagnostic workaround, not proof that quantization caused the encoder problem:
 the standard INT8 export already leaves it in FP32.
 
+### Isolate English INT8 artifacts
+
+The default `int8` command still quantizes all three generation graphs. For
+controlled comparisons, an optional fifth argument selects which graphs the
+pack actually uses in INT8:
+
+| Profile | Main LM | Flow network | Audio decoder |
+| --- | --- | --- | --- |
+| `all` (default) | INT8 | INT8 | INT8 |
+| `main-only` | INT8 | FP32 | FP32 |
+| `main-flow` | INT8 | INT8 | FP32 |
+| `main-decoder` | INT8 | FP32 | INT8 |
+
+Start with a smaller quantization scope:
+
+```bash
+./scripts/export_model_pack.sh english en-US "English (INT8 main only)" int8 main-only
+```
+
+This produces `pockettts-english-int8-main-only.zip`, with pack ID
+`english-int8-main-only`. The other non-default profiles get their own suffix,
+so the packs can coexist with `english-int8` for comparisons. Select Alba and
+keep all generation settings equal. For issue #35, use temperature 0.3, LSD
+steps 1, two threads, 250 ms sentence pause, 50 text tokens and:
+"The quick brown fox jumps over the very lazy dog." Repeat each condition,
+because the reported artifact is intermittent.
+
+All graphs are still exported and quantized, but packaging selects the graph
+bytes specified above. Unquantized auxiliary graphs retain the `_int8.onnx`
+filenames required by the existing Android runtime. The manifest records the
+selection as `int8Profile`; this informational field does not require an APK
+change. `main-only` packs are larger than `all` packs.
+
+To reuse an existing complete export without downloading or converting the
+weights again, add `--int8-profile main-only` (or another profile) to the
+manual `scripts/build_model_pack.py` command below, together with
+`--precision int8` and a distinct `--id` and `--output`. Include the same
+authorized voice recording in every comparison pack.
+
+The upstream PyTorch implementation also leaves the flow network and Mimi
+decoder in FP32; its quantization backend differs from this ONNX path. These
+profiles are diagnostic candidates, not a confirmed fix or an official English
+INT8 release. Numeric export checks and successful word recognition do not
+establish artifact-free audio. Device listening confirmation is still needed.
+
 ## Add an authorized bundled voice while building
 
 The safest public pack contains no recording. Users can import a consented WAV

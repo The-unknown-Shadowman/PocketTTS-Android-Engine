@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [ "$#" -lt 3 ] || [ "$#" -gt 4 ]; then
-  echo "Usage: $0 LANGUAGE BCP47 DISPLAY_NAME [fp32|int8]" >&2
+if [ "$#" -lt 3 ] || [ "$#" -gt 5 ]; then
+  echo "Usage: $0 LANGUAGE BCP47 DISPLAY_NAME [fp32|int8] [all|main-only|main-flow|main-decoder]" >&2
   echo "Example: $0 german de-DE 'German (FP32)' fp32" >&2
   exit 2
 fi
@@ -12,9 +12,18 @@ LANGUAGE=$1
 LANGUAGE_TAG=$2
 DISPLAY_NAME=$3
 PRECISION=${4:-fp32}
+INT8_PROFILE=${5:-all}
 
 if [ "$PRECISION" != "fp32" ] && [ "$PRECISION" != "int8" ]; then
   echo "Precision must be fp32 or int8." >&2
+  exit 2
+fi
+case "$INT8_PROFILE" in
+  all|main-only|main-flow|main-decoder) ;;
+  *) echo "Unknown INT8 profile: $INT8_PROFILE" >&2; exit 2 ;;
+esac
+if [ "$PRECISION" != "int8" ] && [ "$INT8_PROFILE" != "all" ]; then
+  echo "An INT8 profile requires int8 precision." >&2
   exit 2
 fi
 
@@ -22,6 +31,9 @@ command -v uv >/dev/null || { echo "uv is required." >&2; exit 1; }
 command -v ffmpeg >/dev/null || { echo "ffmpeg is required." >&2; exit 1; }
 
 PACK_ID=$(printf '%s-%s' "$LANGUAGE" "$PRECISION" | tr '[:upper:]_' '[:lower:]-' | tr -cd 'a-z0-9-')
+if [ "$PRECISION" = "int8" ] && [ "$INT8_PROFILE" != "all" ]; then
+  PACK_ID="$PACK_ID-$INT8_PROFILE"
+fi
 VENV="$ROOT/.venv-model-export"
 OUT="$ROOT/build/onnx/$LANGUAGE"
 PACK="$ROOT/build/model-packs/pockettts-${PACK_ID}.zip"
@@ -69,6 +81,7 @@ BUILD_ARGS=(
   --name "$DISPLAY_NAME" \
   --language "$LANGUAGE_TAG" \
   --precision "$PRECISION" \
+  --int8-profile "$INT8_PROFILE" \
   --temperature "$TEMPERATURE" \
   --lsd-steps 1 \
   --threads "$THREADS" \

@@ -27,5 +27,7 @@ jobs:
         run: ./scripts/check_publishable.sh
       - name: Test speech processing
         run: python3 scripts/test_speech_effects.py
+      - name: Test model pack profiles
+        run: python3 scripts/test_model_pack_profiles.py
       - name: Build and lint
         run: ./gradlew --no-daemon :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :settings-probe:assembleDebug :discovery-probe:assembleDebug :app:lintDebug
