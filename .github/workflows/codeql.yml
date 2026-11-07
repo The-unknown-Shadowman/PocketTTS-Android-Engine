@@ -55,7 +55,7 @@ jobs:
         run: sdkmanager "platforms;android-37.0" "build-tools;36.0.0"
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@bce182f857edf1feab116e9795a3393d21977282 # v4
+        uses: github/codeql-action/init@0911ee96d2d6c8def97122c36c5cadd93829a4b4 # v4
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
