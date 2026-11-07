@@ -68,7 +68,7 @@ jobs:
 
       - name: Perform CodeQL analysis
         id: codeql-analyze
-        uses: github/codeql-action/analyze@bce182f857edf1feab116e9795a3393d21977282 # v4
+        uses: github/codeql-action/analyze@0911ee96d2d6c8def97122c36c5cadd93829a4b4 # v4
 
       - name: Require clean CodeQL results
         shell: python
