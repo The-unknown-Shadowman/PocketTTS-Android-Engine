@@ -20,7 +20,8 @@ mkdir -p "$ROOT/app/src/main/jniLibs/arm64-v8a" "$ROOT/app/src/main/third_party"
 curl "${DOWNLOAD_OPTIONS[@]}" "https://repo1.maven.org/maven2/com/microsoft/onnxruntime/onnxruntime-android/${VERSION}/onnxruntime-android-${VERSION}.aar" -o "$TMP/ort.aar"
 echo "$AAR_SHA256  $TMP/ort.aar" | sha256sum --check --status
 unzip -p "$TMP/ort.aar" jni/arm64-v8a/libonnxruntime.so > "$ROOT/app/src/main/jniLibs/arm64-v8a/libonnxruntime.so"
-curl "${DOWNLOAD_OPTIONS[@]}" "https://github.com/microsoft/onnxruntime/archive/refs/tags/v${VERSION}.tar.gz" -o "$TMP/ort.tar.gz"
+# Use GitHub's archive service directly, avoiding an extra redirect/failure point.
+curl "${DOWNLOAD_OPTIONS[@]}" "https://codeload.github.com/microsoft/onnxruntime/tar.gz/refs/tags/v${VERSION}" -o "$TMP/ort.tar.gz"
 echo "$SOURCE_SHA256  $TMP/ort.tar.gz" | sha256sum --check --status
 tar -xzf "$TMP/ort.tar.gz" -C "$TMP"
 rm -rf "$ROOT/app/src/main/third_party/onnxruntime"
