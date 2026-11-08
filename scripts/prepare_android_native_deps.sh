@@ -12,12 +12,15 @@ AAR_SHA256=07a8f71ef890afed8c6087a56220e6d558a492804276ee2dd7cb7f6262242027
 SOURCE_SHA256=5d0aaced52921b86f3f2b2eaac18cbfc96184d73e83baf2553c94d9d306c4de9
 TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
+# Retry temporary HTTP/connection failures without accepting unchecked data.
+DOWNLOAD_OPTIONS=(--fail --location --retry 4 --retry-all-errors --retry-delay 3
+  --retry-max-time 180 --connect-timeout 15 --max-time 180)
 
 mkdir -p "$ROOT/app/src/main/jniLibs/arm64-v8a" "$ROOT/app/src/main/third_party"
-curl -fL "https://repo1.maven.org/maven2/com/microsoft/onnxruntime/onnxruntime-android/${VERSION}/onnxruntime-android-${VERSION}.aar" -o "$TMP/ort.aar"
+curl "${DOWNLOAD_OPTIONS[@]}" "https://repo1.maven.org/maven2/com/microsoft/onnxruntime/onnxruntime-android/${VERSION}/onnxruntime-android-${VERSION}.aar" -o "$TMP/ort.aar"
 echo "$AAR_SHA256  $TMP/ort.aar" | sha256sum --check --status
 unzip -p "$TMP/ort.aar" jni/arm64-v8a/libonnxruntime.so > "$ROOT/app/src/main/jniLibs/arm64-v8a/libonnxruntime.so"
-curl -fL "https://github.com/microsoft/onnxruntime/archive/refs/tags/v${VERSION}.tar.gz" -o "$TMP/ort.tar.gz"
+curl "${DOWNLOAD_OPTIONS[@]}" "https://github.com/microsoft/onnxruntime/archive/refs/tags/v${VERSION}.tar.gz" -o "$TMP/ort.tar.gz"
 echo "$SOURCE_SHA256  $TMP/ort.tar.gz" | sha256sum --check --status
 tar -xzf "$TMP/ort.tar.gz" -C "$TMP"
 rm -rf "$ROOT/app/src/main/third_party/onnxruntime"
