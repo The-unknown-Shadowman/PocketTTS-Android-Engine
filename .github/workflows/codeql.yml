@@ -55,7 +55,7 @@ jobs:
         run: sdkmanager "platforms;android-37.0" "build-tools;36.0.0"
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@0911ee96d2d6c8def97122c36c5cadd93829a4b4 # v4
+        uses: github/codeql-action/init@3ea37a44b6e4e6847c46edae209410d258d548d1 # v4
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
@@ -68,7 +68,7 @@ jobs:
 
       - name: Perform CodeQL analysis
         id: codeql-analyze
-        uses: github/codeql-action/analyze@0911ee96d2d6c8def97122c36c5cadd93829a4b4 # v4
+        uses: github/codeql-action/analyze@3ea37a44b6e4e6847c46edae209410d258d548d1 # v4
 
       - name: Require clean CodeQL results
         shell: python
