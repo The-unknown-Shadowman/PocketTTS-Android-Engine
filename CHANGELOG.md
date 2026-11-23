@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.6-rc2](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/tag/v0.5.6-rc2) — 2026-11-23
+
+- Spell out standalone English and German integers from 1,000 to 999,999,999,999,999 before synthesis, using the selected model pack language. English `500,000` and `500000` become “five hundred thousand”; German `500.000` becomes “fünfhunderttausend”.
+- Apply the same conversion to external Android TTS clients and the built-in read-aloud screen. Preserve small numbers, leading-zero identifiers and compound numeric expressions such as decimals, dates, versions and chapter/verse references.
+- Add number preparation and public-client synthesis regression tests. Listening confirmed an incorrect ungrouped English number in the previous app; German sentence beginnings and artifacts remain unresolved. The exact AndBible/Tecarta behavior still needs application-level confirmation in #47.
+- Include reviewed build-tool and CI dependency updates. Prepare ONNX Runtime headers and native binaries from the same checksum-verified Android AAR, avoiding the unavailable source archive.
+- Retain existing model packs, ONNX Runtime 1.20.0, Android 8/API 26 minimum, ARM64 ABI and signing certificate. This is a prerelease; the stable channel remains 0.5.5.
+
 ## 0.5.6-rc1 — Uber discovery compatibility candidate
 
 - Add a real plain-text share destination and a read-aloud screen with review, selected pack/voice, explicit playback, and stop controls in all five UI languages.

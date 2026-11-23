@@ -198,11 +198,16 @@ test-APK build and Android lint passed locally.
 Whisper-small transcription identified the intended quantity in all corrected
 English samples. The previous ungrouped English sample was transcribed as
 “5,000 zoned men”; the previous grouped English sample was already correct.
-This is an ASR observation, not a confirmed listening finding. An initial
-German “Es” was absent from the grouped-sample transcription both before and
-after the change; that also needs listening confirmation. No RNG seed was
-fixed for these public-client requests, so PCM differences are not an isolated
-measure of this change.
+Subsequent listening by the repository owner confirmed the old ungrouped
+English sample as incorrect. Both grouped English samples and all written-out
+control samples were judged correct. The corrected ungrouped English sample
+was not explicitly rated. Listening also confirmed a missing German sentence
+beginning in both grouped-number samples, with additional artifacts in the
+corrected sample. The exact missing word and artifact times were not specified.
+The corrected grouped and written-out German inputs reach the model as the
+same text, despite the different listening results. No RNG seed was fixed for
+these public-client requests, so the cause remains unresolved and PCM
+differences are not an isolated measure of this change.
 
 The exact sequence of zeroes and subsequent mumbling reported in issue #47
 has not been reproduced in AndBible or Tecarta. Their actual request text and
