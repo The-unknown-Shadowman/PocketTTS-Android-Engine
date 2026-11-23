@@ -212,6 +212,27 @@ differences are not an isolated measure of this change.
 The exact sequence of zeroes and subsequent mumbling reported in issue #47
 has not been reproduced in AndBible or Tecarta. Their actual request text and
 splitting remain unverified. This conversion cannot join a number already
-split across separate Android TTS requests. No ARM-phone, INT8 or Q4 speech
-test was performed for this change. Keep issue #47 open for application-level
+split across separate Android TTS requests. This initial comparison did not
+include ARM-phone, INT8 or Q4 speech tests. Keep issue #47 open for application-level
 confirmation; these checks do not establish a universal model-quality fix.
+
+## Signed 0.5.6-rc2, November 23, 2026
+
+The release APK is ARM64, versionCode 27, non-debuggable, minSdk 26, targetSdk
+35, and signed with the same certificate as the previous official APK. Release
+assembly and release lint passed. Its SHA-256 is
+`c5dc67eacec0c72788e528d40c49281cf586f0a6613a6a71125d61c51d843b1e`.
+
+The exact APK was installed as an update over 0.5.5 on an NX809J / Android 16
+phone using the existing model packs and settings. The installed APK's hash
+matches the release artifact. The ten number text checks and five English/German
+number/control file-synthesis requests passed through Android's public TTS
+client. The full metadata, independent rate/pitch, file-synthesis and playback
+regression also passed. The main activity launched successfully after the
+tests, Pocket remained the preferred system engine, and the temporary test
+helper was removed.
+
+These phone checks establish successful synthesis and callback/audio delivery,
+not a listening verdict on every generated word or artifact. There was no
+direct AndBible, Tecarta or Layla interaction in this automated phone test.
+The earlier confirmed German missing starts and artifacts remain unresolved.
