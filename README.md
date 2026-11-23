@@ -55,6 +55,20 @@ It does not override a client that explicitly selects Google. A signed-in Uber
 voice-test confirmation is still required before claiming full compatibility.
 Existing imported model packs remain usable; install over the official APK.
 
+## Number pronunciation in development builds
+
+The TTS service spells out standalone large integers in English and German
+before passing them to the model. For example, `500,000` in an English pack
+becomes “five hundred thousand”; `500.000` in a German pack becomes
+“fünfhunderttausend”. Ungrouped integers such as `500000` work too. This applies
+to external TTS clients and **Read text aloud** through the same service.
+
+The conversion covers integers from 1,000 through 999,999,999,999,999. Small
+numbers, leading-zero identifiers, decimals, dates, versions and chapter/verse
+references are left unchanged. Other model languages are unchanged. Text
+already split into separate requests by a client cannot be reassembled by this
+conversion. This requires an updated APK; existing model packs can be reused.
+
 ## Compatibility and support
 
 The APK requires **Android 8.0 / API 26 or newer** and **ARM64 (`arm64-v8a`)**.
