@@ -121,6 +121,14 @@ To reproduce only the first file-synthesis request on an older APK, add
 `-e baseline true` before the instrumentation component. CI builds the test
 APK; running it requires a connected device with the model packs.
 
+For the large-number regression, use `-e mode numbers` instead. It checks the
+text conversion in the installed app and synthesizes grouped/plain English
+numbers and a German grouped number, with written-out control sentences.
+`-e mode numbers-format` runs only the text checks, without model packs.
+`-e mode numbers-baseline` skips the new text checks and can run the same audio
+cases against an older APK. Add `-e keepAudio true` to retain WAVs in the target
+app's cache as `tts-integration-numbers*.wav` for listening and analysis.
+
 
 ## Settings, language metadata, speech rate, and pitch tests
 

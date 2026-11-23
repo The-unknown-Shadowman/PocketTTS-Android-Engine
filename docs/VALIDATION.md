@@ -175,3 +175,38 @@ and test **Sounds and Voice**. Issue #28 remains open until that result arrives.
 The old model packs are unchanged and need no new download.
 
 Candidate APK SHA-256: `0c563477bfaa8b8eb71e6b98a78885f72843c65447a7c5546974d94365d06b79`.
+
+## Large-number preparation, November 23, 2026
+
+The service now expands standalone English and German integers from 1,000 to
+999,999,999,999,999 into words before model tokenization. English comma grouping
+and German period grouping are interpreted using the selected pack's language.
+The model graphs and native inference implementation are unchanged.
+
+Validation used an Android 14 x86_64 emulator with the published English FP32
+pack (Alba, temperature 0.3, two threads) and German FP32 pack (Juergen,
+temperature 0.5, four threads). Both used LSD 1, a 250 ms sentence pause, and
+a 50-token text limit. Five file-synthesis
+requests were run on the previous app and five on the corrected app through
+Android's public `TextToSpeech` API: grouped/plain English `500000`, a written
+English control, German `500.000`, and a written German control. Both runs
+completed with non-silent WAVs and successful callbacks. Eight new JVM number
+tests, ten installed-app text checks, and the existing metadata, independent
+rate/pitch, file-synthesis and playback device regression passed. ARM64 build,
+test-APK build and Android lint passed locally.
+
+Whisper-small transcription identified the intended quantity in all corrected
+English samples. The previous ungrouped English sample was transcribed as
+“5,000 zoned men”; the previous grouped English sample was already correct.
+This is an ASR observation, not a confirmed listening finding. An initial
+German “Es” was absent from the grouped-sample transcription both before and
+after the change; that also needs listening confirmation. No RNG seed was
+fixed for these public-client requests, so PCM differences are not an isolated
+measure of this change.
+
+The exact sequence of zeroes and subsequent mumbling reported in issue #47
+has not been reproduced in AndBible or Tecarta. Their actual request text and
+splitting remain unverified. This conversion cannot join a number already
+split across separate Android TTS requests. No ARM-phone, INT8 or Q4 speech
+test was performed for this change. Keep issue #47 open for application-level
+confirmation; these checks do not establish a universal model-quality fix.

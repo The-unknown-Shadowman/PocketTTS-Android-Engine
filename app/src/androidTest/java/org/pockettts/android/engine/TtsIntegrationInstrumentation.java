@@ -36,6 +36,13 @@ public final class TtsIntegrationInstrumentation extends Instrumentation {
         Bundle result = new Bundle();
         int code = Activity.RESULT_CANCELED;
         try {
+            String mode = arguments.getString("mode", "full");
+            if ("numbers-format".equals(mode)) {
+                SpokenNumbersDeviceTest.run();
+                result.putString("result", "PASS: Android number normalization");
+                code = Activity.RESULT_OK;
+                return;
+            }
             CountDownLatch initialized = new CountDownLatch(1);
             int[] status = {TextToSpeech.ERROR};
             runOnMainSync(() -> tts = new TextToSpeech(getTargetContext(), value -> {
@@ -44,7 +51,19 @@ public final class TtsIntegrationInstrumentation extends Instrumentation {
             }, "org.pockettts.android.engine"));
             require(initialized.await(30, TimeUnit.SECONDS), "TTS initialization timed out");
             require(status[0] == TextToSpeech.SUCCESS, "TTS initialization failed");
-            String mode = arguments.getString("mode", "full");
+            if ("numbers".equals(mode) || "numbers-baseline".equals(mode)) {
+                if ("numbers".equals(mode)) SpokenNumbersDeviceTest.run();
+                tts.setSpeechRate(1f);
+                tts.setPitch(1f);
+                synthesize("english-fp32", "There were 500,000 men in the army.", mode + "-en-grouped", false);
+                synthesize("english-fp32", "There were 500000 men in the army.", mode + "-en-plain", false);
+                synthesize("english-fp32", "There were five hundred thousand men in the army.", mode + "-en-words", false);
+                synthesize("german-fp32", "Es waren 500.000 Menschen in der Stadt.", mode + "-de-grouped", false);
+                synthesize("german-fp32", "Es waren fünfhunderttausend Menschen in der Stadt.", mode + "-de-words", false);
+                result.putString("result", "PASS: English/German number synthesis through Android TTS");
+                code = Activity.RESULT_OK;
+                return;
+            }
             verifyMetadata();
             require(tts.isLanguageAvailable(Locale.GERMANY) >= TextToSpeech.LANG_COUNTRY_AVAILABLE,
                     "German country support missing");
@@ -114,7 +133,9 @@ public final class TtsIntegrationInstrumentation extends Instrumentation {
             Log.i(TAG, "INTEGRATION_OK mode=" + id + " bytes=" + (playback ? 0 : output.length()));
             return playback ? 0 : output.length();
         } finally {
-            if (output.exists() && !output.delete()) Log.w(TAG, "Could not delete test WAV");
+            if (!"true".equals(arguments.getString("keepAudio")) && output.exists() && !output.delete()) {
+                Log.w(TAG, "Could not delete test WAV");
+            }
         }
     }
 

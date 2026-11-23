@@ -152,7 +152,8 @@ class PocketTtsService : TextToSpeechService() {
                 Log.i(TAG, "SYNTH_AUDIO samples=${samples.size} total=$totalSamples blocks=$androidBlocks")
                 return true
             }
-            val ok = tts.synthesize(text, voice.fileName, object : NativePocketTts.AudioSink {
+            val spokenText = SpokenNumbers.normalize(text, pack.locale)
+            val ok = tts.synthesize(spokenText, voice.fileName, object : NativePocketTts.AudioSink {
                 override fun onAudio(samples: FloatArray): Boolean = deliver(effects?.process(samples) ?: samples)
             })
             val flushed = !ok || effects == null || deliver(effects.finish())
