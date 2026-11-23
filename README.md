@@ -36,7 +36,23 @@ reopening Settings on both. See [validation details](docs/VALIDATION.md) and the
 [Issue #26](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/26)
 tracks the original settings report. Uber Driver routing is a separate
 [issue #28](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/28)
-and has not yet been verified inside Uber Driver.
+and was confirmed working by the reporter with 0.5.6-rc1, including navigation
+and Android Auto playback.
+
+## Latest preview: 0.5.6-rc2
+
+[Download the signed preview APK](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/download/v0.5.6-rc2/PocketTTS-Android-Engine-0.5.6-rc2.apk)
+· [Release notes and checksum](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/releases/tag/v0.5.6-rc2)
+
+This preview adds English and German large-number pronunciation to the TTS
+service used by external apps and **Read text aloud**. Install over the official
+APK to retain existing model packs and settings. The stable release is 0.5.5.
+
+This is a focused number-pronunciation update. Listening tests still found a
+missing German sentence beginning in both the old and corrected app, plus
+artifacts in one corrected German sample. Those findings remain open in
+[issue #47](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/47).
+See [the validation report](docs/VALIDATION.md) for test scope and listening results.
 
 ## Uber compatibility candidate: 0.5.6-rc1
 
@@ -51,11 +67,12 @@ The share destination also makes Pocket discoverable to clients such as
 Uber Driver 4.602.10001 whose package queries include plain-text sharing but
 omit TTS-service discovery. This addresses the package filtering confirmed in
 [issue #28](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/28).
-It does not override a client that explicitly selects Google. A signed-in Uber
-voice-test confirmation is still required before claiming full compatibility.
+It does not override a client that explicitly selects Google. The reporter
+confirmed Uber navigation and Android Auto playback with this candidate;
+issue #28 is closed for that reported configuration.
 Existing imported model packs remain usable; install over the official APK.
 
-## Number pronunciation in development builds
+## Number pronunciation in 0.5.6-rc2
 
 The TTS service spells out standalone large integers in English and German
 before passing them to the model. For example, `500,000` in an English pack
@@ -91,7 +108,7 @@ the current project scope. This report does not change the Android minimum.
 Dedicated performance optimization for weaker devices is not a development
 goal. Synthesis latency and playback smoothness depend on the hardware and
 model. General crashes and functional defects can still be investigated.
-Uber Driver compatibility remains an active investigation in
+Uber Driver compatibility was confirmed for the configuration reported in
 [issue #28](https://github.com/The-unknown-Shadowman/PocketTTS-Android-Engine/issues/28).
 
 For a reproducible compatibility report, use the focused
