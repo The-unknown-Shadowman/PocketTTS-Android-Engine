@@ -175,7 +175,8 @@ and test **Sounds and Voice**. Issue #28 remains open until that result arrives.
 The old model packs are unchanged and need no new download.
 
 Candidate APK SHA-256: `0c563477bfaa8b8eb71e6b98a78885f72843c65447a7c5546974d94365d06b79`.
-# Large-number preparation, November 23, 2026
+
+## Large-number preparation, November 23, 2026
 
 The service now expands standalone English and German integers from 1,000 to
 999,999,999,999,999 into words before model tokenization. English comma grouping
@@ -183,8 +184,9 @@ and German period grouping are interpreted using the selected pack's language.
 The model graphs and native inference implementation are unchanged.
 
 Validation used an Android 14 x86_64 emulator with the published English FP32
-pack (Alba) and German FP32 pack (Juergen), four threads, temperature 0.5,
-LSD 1, 250 ms sentence pause, and a 50-token text limit. Five file-synthesis
+pack (Alba, temperature 0.3, two threads) and German FP32 pack (Juergen,
+temperature 0.5, four threads). Both used LSD 1, a 250 ms sentence pause, and
+a 50-token text limit. Five file-synthesis
 requests were run on the previous app and five on the corrected app through
 Android's public `TextToSpeech` API: grouped/plain English `500000`, a written
 English control, German `500.000`, and a written German control. Both runs
@@ -208,4 +210,3 @@ splitting remain unverified. This conversion cannot join a number already
 split across separate Android TTS requests. No ARM-phone, INT8 or Q4 speech
 test was performed for this change. Keep issue #47 open for application-level
 confirmation; these checks do not establish a universal model-quality fix.
-
