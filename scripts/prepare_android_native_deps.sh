@@ -9,7 +9,6 @@ ROOT=$(cd "$(dirname "$0")/.." && pwd)
 # Snapdragon 8 Elite device. Import only model packs from trusted sources.
 VERSION=1.20.0
 AAR_SHA256=07a8f71ef890afed8c6087a56220e6d558a492804276ee2dd7cb7f6262242027
-SOURCE_SHA256=5d0aaced52921b86f3f2b2eaac18cbfc96184d73e83baf2553c94d9d306c4de9
 TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 # Retry temporary HTTP/connection failures without accepting unchecked data.
@@ -20,11 +19,11 @@ mkdir -p "$ROOT/app/src/main/jniLibs/arm64-v8a" "$ROOT/app/src/main/third_party"
 curl "${DOWNLOAD_OPTIONS[@]}" "https://repo1.maven.org/maven2/com/microsoft/onnxruntime/onnxruntime-android/${VERSION}/onnxruntime-android-${VERSION}.aar" -o "$TMP/ort.aar"
 echo "$AAR_SHA256  $TMP/ort.aar" | sha256sum --check --status
 unzip -p "$TMP/ort.aar" jni/arm64-v8a/libonnxruntime.so > "$ROOT/app/src/main/jniLibs/arm64-v8a/libonnxruntime.so"
-# Use GitHub's archive service directly, avoiding an extra redirect/failure point.
-curl "${DOWNLOAD_OPTIONS[@]}" "https://codeload.github.com/microsoft/onnxruntime/tar.gz/refs/tags/v${VERSION}" -o "$TMP/ort.tar.gz"
-echo "$SOURCE_SHA256  $TMP/ort.tar.gz" | sha256sum --check --status
-tar -xzf "$TMP/ort.tar.gz" -C "$TMP"
+# The checked AAR includes the public headers matching its native binary.
+# Extract both from that one artifact instead of depending on a source archive.
+unzip -q "$TMP/ort.aar" 'headers/*.h' -d "$TMP"
 rm -rf "$ROOT/app/src/main/third_party/onnxruntime"
-mkdir -p "$ROOT/app/src/main/third_party/onnxruntime"
-cp -R "$TMP/onnxruntime-${VERSION}/include" "$ROOT/app/src/main/third_party/onnxruntime/include"
+HEADER_DIR="$ROOT/app/src/main/third_party/onnxruntime/include/onnxruntime/core/session"
+mkdir -p "$HEADER_DIR"
+cp "$TMP"/headers/*.h "$HEADER_DIR/"
 echo "ONNX Runtime Android ${VERSION} (arm64-v8a) is ready."
